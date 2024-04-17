@@ -1,0 +1,2684 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model account_email_history {
+  record_id         BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String   @db.VarChar(36)
+  target_record_id  BigInt   @db.UnsignedBigInt
+  account_id        String   @db.VarChar(36)
+  email             String   @db.VarChar(128)
+  is_active         Boolean? @default(true)
+  change_type       String   @db.VarChar(6)
+  created_by        String   @db.VarChar(50)
+  created_date      DateTime @db.DateTime(0)
+  updated_by        String   @db.VarChar(50)
+  updated_date      DateTime @db.DateTime(0)
+  account_record_id BigInt   @db.UnsignedBigInt
+  tenant_record_id  BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([tenant_record_id, account_record_id], map: "account_email_history_tenant_account_record_id")
+  @@index([target_record_id], map: "account_email_target_record_id")
+}
+
+model account_emails {
+  record_id         BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String   @unique(map: "account_email_id") @db.VarChar(36)
+  account_id        String   @db.VarChar(36)
+  email             String   @db.VarChar(128)
+  is_active         Boolean? @default(true)
+  created_by        String   @db.VarChar(50)
+  created_date      DateTime @db.DateTime(0)
+  updated_by        String   @db.VarChar(50)
+  updated_date      DateTime @db.DateTime(0)
+  account_record_id BigInt   @db.UnsignedBigInt
+  tenant_record_id  BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([account_id, email], map: "account_email_account_id_email")
+  @@index([tenant_record_id, account_record_id], map: "account_emails_tenant_account_record_id")
+}
+
+model account_history {
+  record_id                      BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                             String   @db.VarChar(36)
+  target_record_id               BigInt   @db.UnsignedBigInt
+  external_key                   String   @db.VarChar(255)
+  email                          String?  @db.VarChar(128)
+  name                           String?  @db.VarChar(100)
+  first_name_length              Int?
+  currency                       String?  @db.VarChar(3)
+  billing_cycle_day_local        Int?
+  parent_account_id              String?  @db.VarChar(36)
+  is_payment_delegated_to_parent Boolean? @default(false)
+  payment_method_id              String?  @db.VarChar(36)
+  reference_time                 DateTime @db.DateTime(0)
+  time_zone                      String   @db.VarChar(50)
+  locale                         String?  @db.VarChar(5)
+  address1                       String?  @db.VarChar(100)
+  address2                       String?  @db.VarChar(100)
+  company_name                   String?  @db.VarChar(50)
+  city                           String?  @db.VarChar(50)
+  state_or_province              String?  @db.VarChar(50)
+  country                        String?  @db.VarChar(50)
+  postal_code                    String?  @db.VarChar(16)
+  phone                          String?  @db.VarChar(25)
+  notes                          String?  @db.VarChar(4096)
+  migrated                       Boolean? @default(false)
+  change_type                    String   @db.VarChar(6)
+  created_by                     String   @db.VarChar(50)
+  created_date                   DateTime @db.DateTime(0)
+  updated_by                     String   @db.VarChar(50)
+  updated_date                   DateTime @db.DateTime(0)
+  tenant_record_id               BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([target_record_id], map: "account_history_target_record_id")
+  @@index([tenant_record_id], map: "account_history_tenant_record_id")
+}
+
+model accounts {
+  record_id                      BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                             String    @unique(map: "accounts_id") @db.VarChar(36)
+  external_key                   String    @db.VarChar(255)
+  email                          String?   @db.VarChar(128)
+  name                           String?   @db.VarChar(100)
+  first_name_length              Int?
+  currency                       String?   @db.VarChar(3)
+  billing_cycle_day_local        Int?
+  parent_account_id              String?   @db.VarChar(36)
+  is_payment_delegated_to_parent Boolean?  @default(false)
+  payment_method_id              String?   @db.VarChar(36)
+  reference_time                 DateTime  @db.DateTime(0)
+  time_zone                      String    @db.VarChar(50)
+  locale                         String?   @db.VarChar(5)
+  address1                       String?   @db.VarChar(100)
+  address2                       String?   @db.VarChar(100)
+  company_name                   String?   @db.VarChar(50)
+  city                           String?   @db.VarChar(50)
+  state_or_province              String?   @db.VarChar(50)
+  country                        String?   @db.VarChar(50)
+  postal_code                    String?   @db.VarChar(16)
+  phone                          String?   @db.VarChar(25)
+  notes                          String?   @db.VarChar(4096)
+  migrated                       Boolean?  @default(false)
+  created_date                   DateTime  @db.DateTime(0)
+  created_by                     String    @db.VarChar(50)
+  updated_date                   DateTime? @db.DateTime(0)
+  updated_by                     String?   @db.VarChar(50)
+  tenant_record_id               BigInt    @default(0) @db.UnsignedBigInt
+
+  @@unique([external_key, tenant_record_id], map: "accounts_external_key")
+  @@index([company_name, tenant_record_id], map: "accounts_company_name_tenant_record_id")
+  @@index([email, tenant_record_id], map: "accounts_email_tenant_record_id")
+  @@index([name, tenant_record_id], map: "accounts_name_tenant_record_id")
+  @@index([parent_account_id], map: "accounts_parents")
+  @@index([tenant_record_id], map: "accounts_tenant_record_id")
+}
+
+model analytics_account_fields {
+  record_id              BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  custom_field_record_id BigInt?   @db.UnsignedBigInt
+  name                   String?   @db.VarChar(64)
+  field_value            String?   @db.VarChar(255)
+  created_date           DateTime? @db.DateTime(0)
+  created_by             String?   @db.VarChar(50)
+  created_reason_code    String?   @db.VarChar(255)
+  created_comments       String?   @db.VarChar(255)
+  account_id             String?   @db.VarChar(36)
+  account_name           String?   @db.VarChar(100)
+  account_external_key   String?   @db.VarChar(255)
+  account_record_id      BigInt?   @db.UnsignedBigInt
+  tenant_record_id       BigInt?   @db.UnsignedBigInt
+  report_group           String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_account_fields_account_id")
+  @@index([account_record_id], map: "analytics_account_fields_account_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_account_fields_tenant_account_record_id")
+}
+
+model analytics_account_tags {
+  record_id            BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  tag_record_id        BigInt?   @db.UnsignedBigInt
+  name                 String?   @db.VarChar(50)
+  created_date         DateTime? @db.DateTime(0)
+  created_by           String?   @db.VarChar(50)
+  created_reason_code  String?   @db.VarChar(255)
+  created_comments     String?   @db.VarChar(255)
+  account_id           String?   @db.VarChar(36)
+  account_name         String?   @db.VarChar(100)
+  account_external_key String?   @db.VarChar(255)
+  account_record_id    BigInt?   @db.UnsignedBigInt
+  tenant_record_id     BigInt?   @db.UnsignedBigInt
+  report_group         String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_account_tags_account_id")
+  @@index([account_record_id], map: "analytics_account_tags_account_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_account_tags_tenant_account_record_id")
+}
+
+model analytics_account_transitions {
+  record_id                BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  blocking_state_record_id BigInt?   @db.UnsignedBigInt
+  service                  String?   @db.VarChar(50)
+  state                    String?   @db.VarChar(50)
+  start_date               DateTime? @db.Date
+  end_date                 DateTime? @db.Date
+  created_date             DateTime? @db.DateTime(0)
+  created_by               String?   @db.VarChar(50)
+  created_reason_code      String?   @db.VarChar(255)
+  created_comments         String?   @db.VarChar(255)
+  account_id               String?   @db.VarChar(36)
+  account_name             String?   @db.VarChar(100)
+  account_external_key     String?   @db.VarChar(255)
+  account_record_id        BigInt?   @db.UnsignedBigInt
+  tenant_record_id         BigInt?   @db.UnsignedBigInt
+  report_group             String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_account_transitions_account_id")
+  @@index([account_record_id], map: "analytics_account_transitions_account_record_id")
+  @@index([blocking_state_record_id], map: "analytics_account_transitions_blocking_state_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_account_transitions_tenant_account_record_id")
+}
+
+model analytics_accounts {
+  record_id                               BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  email                                   String?   @db.VarChar(128)
+  first_name_length                       Int?
+  currency                                String?   @db.VarChar(3)
+  billing_cycle_day_local                 Int?
+  payment_method_id                       String?   @db.VarChar(36)
+  time_zone                               String?   @db.VarChar(50)
+  locale                                  String?   @db.VarChar(5)
+  address1                                String?   @db.VarChar(100)
+  address2                                String?   @db.VarChar(100)
+  company_name                            String?   @db.VarChar(50)
+  city                                    String?   @db.VarChar(50)
+  state_or_province                       String?   @db.VarChar(50)
+  country                                 String?   @db.VarChar(50)
+  postal_code                             String?   @db.VarChar(16)
+  phone                                   String?   @db.VarChar(25)
+  migrated                                Boolean?  @default(false)
+  balance                                 Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_balance                       Decimal?  @db.Decimal(10, 4)
+  oldest_unpaid_invoice_date              DateTime? @db.Date
+  oldest_unpaid_invoice_balance           Decimal?  @db.Decimal(10, 4)
+  oldest_unpaid_invoice_currency          String?   @db.VarChar(3)
+  converted_oldest_unpaid_invoice_balance Decimal?  @db.Decimal(10, 4)
+  oldest_unpaid_invoice_id                String?   @db.VarChar(36)
+  last_invoice_date                       DateTime? @db.Date
+  last_invoice_balance                    Decimal?  @db.Decimal(10, 4)
+  last_invoice_currency                   String?   @db.VarChar(3)
+  converted_last_invoice_balance          Decimal?  @db.Decimal(10, 4)
+  last_invoice_id                         String?   @db.VarChar(36)
+  last_payment_date                       DateTime? @db.DateTime(0)
+  last_payment_status                     String?   @db.VarChar(255)
+  nb_active_bundles                       Int?      @default(0)
+  converted_currency                      String?   @db.VarChar(3)
+  created_date                            DateTime? @db.DateTime(0)
+  created_by                              String?   @db.VarChar(50)
+  created_reason_code                     String?   @db.VarChar(255)
+  created_comments                        String?   @db.VarChar(255)
+  updated_date                            DateTime? @db.DateTime(0)
+  account_id                              String?   @db.VarChar(36)
+  account_name                            String?   @db.VarChar(100)
+  account_external_key                    String?   @db.VarChar(255)
+  parent_account_id                       String?   @db.VarChar(36)
+  parent_account_name                     String?   @db.VarChar(100)
+  parent_account_external_key             String?   @db.VarChar(255)
+  account_record_id                       BigInt?   @db.UnsignedBigInt
+  tenant_record_id                        BigInt?   @db.UnsignedBigInt
+  report_group                            String    @db.VarChar(50)
+
+  @@index([account_external_key], map: "analytics_accounts_account_external_key")
+  @@index([account_id], map: "analytics_accounts_account_id")
+  @@index([account_record_id], map: "analytics_accounts_account_record_id")
+  @@index([created_date, tenant_record_id, report_group], map: "analytics_accounts_created_date_tenant_record_id_report_group")
+  @@index([tenant_record_id, account_record_id], map: "analytics_accounts_tenant_account_record_id")
+}
+
+model analytics_bundle_fields {
+  record_id              BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  custom_field_record_id BigInt?   @db.UnsignedBigInt
+  bundle_id              String?   @db.VarChar(36)
+  bundle_external_key    String?   @db.VarChar(255)
+  name                   String?   @db.VarChar(64)
+  field_value            String?   @db.VarChar(255)
+  created_date           DateTime? @db.DateTime(0)
+  created_by             String?   @db.VarChar(50)
+  created_reason_code    String?   @db.VarChar(255)
+  created_comments       String?   @db.VarChar(255)
+  account_id             String?   @db.VarChar(36)
+  account_name           String?   @db.VarChar(100)
+  account_external_key   String?   @db.VarChar(255)
+  account_record_id      BigInt?   @db.UnsignedBigInt
+  tenant_record_id       BigInt?   @db.UnsignedBigInt
+  report_group           String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_bundle_fields_account_id")
+  @@index([account_record_id], map: "analytics_bundle_fields_account_record_id")
+  @@index([bundle_external_key], map: "analytics_bundle_fields_bundle_external_key")
+  @@index([bundle_id], map: "analytics_bundle_fields_bundle_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_bundle_fields_tenant_account_record_id")
+}
+
+model analytics_bundle_tags {
+  record_id            BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  tag_record_id        BigInt?   @db.UnsignedBigInt
+  bundle_id            String?   @db.VarChar(36)
+  bundle_external_key  String?   @db.VarChar(255)
+  name                 String?   @db.VarChar(50)
+  created_date         DateTime? @db.DateTime(0)
+  created_by           String?   @db.VarChar(50)
+  created_reason_code  String?   @db.VarChar(255)
+  created_comments     String?   @db.VarChar(255)
+  account_id           String?   @db.VarChar(36)
+  account_name         String?   @db.VarChar(100)
+  account_external_key String?   @db.VarChar(255)
+  account_record_id    BigInt?   @db.UnsignedBigInt
+  tenant_record_id     BigInt?   @db.UnsignedBigInt
+  report_group         String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_bundle_tags_account_id")
+  @@index([account_record_id], map: "analytics_bundle_tags_account_record_id")
+  @@index([bundle_external_key], map: "analytics_bundle_tags_bundle_external_key")
+  @@index([bundle_id], map: "analytics_bundle_tags_bundle_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_bundle_tags_tenant_account_record_id")
+}
+
+model analytics_bundles {
+  record_id                      BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  bundle_record_id               BigInt?   @db.UnsignedBigInt
+  bundle_id                      String?   @db.VarChar(36)
+  bundle_external_key            String?   @db.VarChar(255)
+  subscription_id                String?   @db.VarChar(36)
+  bundle_account_rank            Int?
+  latest_for_bundle_external_key Boolean?  @default(false)
+  charged_through_date           DateTime? @db.Date
+  current_product_name           String?   @db.VarChar(255)
+  current_product_type           String?   @db.VarChar(50)
+  current_product_category       String?   @db.VarChar(50)
+  current_slug                   String?   @db.VarChar(255)
+  current_phase                  String?   @db.VarChar(255)
+  current_billing_period         String?   @db.VarChar(50)
+  current_price                  Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_current_price        Decimal?  @db.Decimal(10, 4)
+  current_price_list             String?   @db.VarChar(50)
+  current_mrr                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_current_mrr          Decimal?  @db.Decimal(10, 4)
+  current_currency               String?   @db.VarChar(50)
+  current_service                String?   @db.VarChar(50)
+  current_state                  String?   @db.VarChar(50)
+  current_business_active        Boolean?  @default(true)
+  current_start_date             DateTime? @db.Date
+  current_end_date               DateTime? @db.Date
+  converted_currency             String?   @db.VarChar(3)
+  original_created_date          DateTime? @db.DateTime(0)
+  created_date                   DateTime? @db.DateTime(0)
+  created_by                     String?   @db.VarChar(50)
+  created_reason_code            String?   @db.VarChar(255)
+  created_comments               String?   @db.VarChar(255)
+  account_id                     String?   @db.VarChar(36)
+  account_name                   String?   @db.VarChar(100)
+  account_external_key           String?   @db.VarChar(255)
+  account_record_id              BigInt?   @db.UnsignedBigInt
+  tenant_record_id               BigInt?   @db.UnsignedBigInt
+  report_group                   String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_bundles_account_id")
+  @@index([account_record_id], map: "analytics_bundles_account_record_id")
+  @@index([bundle_id], map: "analytics_bundles_bundle_bundle_id")
+  @@index([bundle_external_key], map: "analytics_bundles_bundle_external_key")
+  @@index([tenant_record_id, account_record_id], map: "analytics_bundles_tenant_account_record_id")
+}
+
+model analytics_currency_conversion {
+  record_id          BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  currency           String   @db.VarChar(3)
+  start_date         DateTime @db.Date
+  end_date           DateTime @db.Date
+  reference_rate     Decimal  @db.Decimal(10, 4)
+  reference_currency String?  @default("USD") @db.VarChar(3)
+
+  @@index([start_date, end_date, currency, reference_currency], map: "analytics_currency_conversion_dates_currencies")
+}
+
+model analytics_invoice_adjustments {
+  record_id                                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  invoice_item_record_id                    BigInt?   @db.UnsignedBigInt
+  second_invoice_item_record_id             BigInt?   @db.UnsignedBigInt
+  item_id                                   String?   @db.VarChar(36)
+  invoice_id                                String?   @db.VarChar(36)
+  invoice_number                            BigInt?
+  invoice_created_date                      DateTime? @db.DateTime(0)
+  invoice_date                              DateTime? @db.Date
+  invoice_target_date                       DateTime? @db.Date
+  invoice_currency                          String?   @db.VarChar(50)
+  raw_invoice_balance                       Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_raw_invoice_balance             Decimal?  @db.Decimal(10, 4)
+  invoice_balance                           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_balance                 Decimal?  @db.Decimal(10, 4)
+  invoice_amount_paid                       Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_paid             Decimal?  @db.Decimal(10, 4)
+  invoice_amount_charged                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_charged          Decimal?  @db.Decimal(10, 4)
+  invoice_original_amount_charged           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_original_amount_charged Decimal?  @db.Decimal(10, 4)
+  invoice_amount_credited                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_credited         Decimal?  @db.Decimal(10, 4)
+  invoice_amount_refunded                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_refunded         Decimal?  @db.Decimal(10, 4)
+  invoice_written_off                       Boolean?  @default(false)
+  item_type                                 String?   @db.VarChar(50)
+  item_source                               String    @db.VarChar(50)
+  bundle_id                                 String?   @db.VarChar(36)
+  bundle_external_key                       String?   @db.VarChar(255)
+  product_name                              String?   @db.VarChar(255)
+  product_type                              String?   @db.VarChar(50)
+  product_category                          String?   @db.VarChar(50)
+  slug                                      String?   @db.VarChar(255)
+  phase                                     String?   @db.VarChar(255)
+  billing_period                            String?   @db.VarChar(50)
+  start_date                                DateTime? @db.Date
+  end_date                                  DateTime? @db.Date
+  amount                                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_amount                          Decimal?  @db.Decimal(10, 4)
+  currency                                  String?   @db.VarChar(50)
+  linked_item_id                            String?   @db.VarChar(36)
+  converted_currency                        String?   @db.VarChar(3)
+  created_date                              DateTime? @db.DateTime(0)
+  created_by                                String?   @db.VarChar(50)
+  created_reason_code                       String?   @db.VarChar(255)
+  created_comments                          String?   @db.VarChar(255)
+  account_id                                String?   @db.VarChar(36)
+  account_name                              String?   @db.VarChar(100)
+  account_external_key                      String?   @db.VarChar(255)
+  account_record_id                         BigInt?   @db.UnsignedBigInt
+  tenant_record_id                          BigInt?   @db.UnsignedBigInt
+  report_group                              String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_invoice_adjustments_account_id")
+  @@index([account_record_id], map: "analytics_invoice_adjustments_account_record_id")
+  @@index([invoice_id], map: "analytics_invoice_adjustments_invoice_id")
+  @@index([invoice_item_record_id], map: "analytics_invoice_adjustments_invoice_item_record_id")
+  @@index([item_id], map: "analytics_invoice_adjustments_item_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_invoice_adjustments_tenant_account_record_id")
+}
+
+model analytics_invoice_credits {
+  record_id                                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  invoice_item_record_id                    BigInt?   @db.UnsignedBigInt
+  second_invoice_item_record_id             BigInt?   @db.UnsignedBigInt
+  item_id                                   String?   @db.VarChar(36)
+  invoice_id                                String?   @db.VarChar(36)
+  invoice_number                            BigInt?
+  invoice_created_date                      DateTime? @db.DateTime(0)
+  invoice_date                              DateTime? @db.Date
+  invoice_target_date                       DateTime? @db.Date
+  invoice_currency                          String?   @db.VarChar(50)
+  raw_invoice_balance                       Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_raw_invoice_balance             Decimal?  @db.Decimal(10, 4)
+  invoice_balance                           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_balance                 Decimal?  @db.Decimal(10, 4)
+  invoice_amount_paid                       Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_paid             Decimal?  @db.Decimal(10, 4)
+  invoice_amount_charged                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_charged          Decimal?  @db.Decimal(10, 4)
+  invoice_original_amount_charged           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_original_amount_charged Decimal?  @db.Decimal(10, 4)
+  invoice_amount_credited                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_credited         Decimal?  @db.Decimal(10, 4)
+  invoice_amount_refunded                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_refunded         Decimal?  @db.Decimal(10, 4)
+  invoice_written_off                       Boolean?  @default(false)
+  item_type                                 String?   @db.VarChar(50)
+  item_source                               String    @db.VarChar(50)
+  bundle_id                                 String?   @db.VarChar(36)
+  bundle_external_key                       String?   @db.VarChar(255)
+  product_name                              String?   @db.VarChar(255)
+  product_type                              String?   @db.VarChar(50)
+  product_category                          String?   @db.VarChar(50)
+  slug                                      String?   @db.VarChar(255)
+  phase                                     String?   @db.VarChar(255)
+  billing_period                            String?   @db.VarChar(50)
+  start_date                                DateTime? @db.Date
+  end_date                                  DateTime? @db.Date
+  amount                                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_amount                          Decimal?  @db.Decimal(10, 4)
+  currency                                  String?   @db.VarChar(50)
+  linked_item_id                            String?   @db.VarChar(36)
+  converted_currency                        String?   @db.VarChar(3)
+  created_date                              DateTime? @db.DateTime(0)
+  created_by                                String?   @db.VarChar(50)
+  created_reason_code                       String?   @db.VarChar(255)
+  created_comments                          String?   @db.VarChar(255)
+  account_id                                String?   @db.VarChar(36)
+  account_name                              String?   @db.VarChar(100)
+  account_external_key                      String?   @db.VarChar(255)
+  account_record_id                         BigInt?   @db.UnsignedBigInt
+  tenant_record_id                          BigInt?   @db.UnsignedBigInt
+  report_group                              String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_invoice_credits_account_id")
+  @@index([account_record_id], map: "analytics_invoice_credits_account_record_id")
+  @@index([invoice_id], map: "analytics_invoice_credits_invoice_id")
+  @@index([invoice_item_record_id], map: "analytics_invoice_credits_invoice_item_record_id")
+  @@index([item_id], map: "analytics_invoice_credits_item_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_invoice_credits_tenant_account_record_id")
+}
+
+model analytics_invoice_fields {
+  record_id              BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  custom_field_record_id BigInt?   @db.UnsignedBigInt
+  invoice_id             String?   @db.VarChar(36)
+  name                   String?   @db.VarChar(64)
+  field_value            String?   @db.VarChar(255)
+  created_date           DateTime? @db.DateTime(0)
+  created_by             String?   @db.VarChar(50)
+  created_reason_code    String?   @db.VarChar(255)
+  created_comments       String?   @db.VarChar(255)
+  account_id             String?   @db.VarChar(36)
+  account_name           String?   @db.VarChar(100)
+  account_external_key   String?   @db.VarChar(255)
+  account_record_id      BigInt?   @db.UnsignedBigInt
+  tenant_record_id       BigInt?   @db.UnsignedBigInt
+  report_group           String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_invoice_fields_account_id")
+  @@index([account_record_id], map: "analytics_invoice_fields_account_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_invoice_fields_tenant_account_record_id")
+}
+
+model analytics_invoice_item_adjustments {
+  record_id                                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  invoice_item_record_id                    BigInt?   @db.UnsignedBigInt
+  second_invoice_item_record_id             BigInt?   @db.UnsignedBigInt
+  item_id                                   String?   @db.VarChar(36)
+  invoice_id                                String?   @db.VarChar(36)
+  invoice_number                            BigInt?
+  invoice_created_date                      DateTime? @db.DateTime(0)
+  invoice_date                              DateTime? @db.Date
+  invoice_target_date                       DateTime? @db.Date
+  invoice_currency                          String?   @db.VarChar(50)
+  raw_invoice_balance                       Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_raw_invoice_balance             Decimal?  @db.Decimal(10, 4)
+  invoice_balance                           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_balance                 Decimal?  @db.Decimal(10, 4)
+  invoice_amount_paid                       Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_paid             Decimal?  @db.Decimal(10, 4)
+  invoice_amount_charged                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_charged          Decimal?  @db.Decimal(10, 4)
+  invoice_original_amount_charged           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_original_amount_charged Decimal?  @db.Decimal(10, 4)
+  invoice_amount_credited                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_credited         Decimal?  @db.Decimal(10, 4)
+  invoice_amount_refunded                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_refunded         Decimal?  @db.Decimal(10, 4)
+  invoice_written_off                       Boolean?  @default(false)
+  item_type                                 String?   @db.VarChar(50)
+  item_source                               String    @db.VarChar(50)
+  bundle_id                                 String?   @db.VarChar(36)
+  bundle_external_key                       String?   @db.VarChar(255)
+  product_name                              String?   @db.VarChar(255)
+  product_type                              String?   @db.VarChar(50)
+  product_category                          String?   @db.VarChar(50)
+  slug                                      String?   @db.VarChar(255)
+  phase                                     String?   @db.VarChar(255)
+  billing_period                            String?   @db.VarChar(50)
+  start_date                                DateTime? @db.Date
+  end_date                                  DateTime? @db.Date
+  amount                                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_amount                          Decimal?  @db.Decimal(10, 4)
+  currency                                  String?   @db.VarChar(50)
+  linked_item_id                            String?   @db.VarChar(36)
+  converted_currency                        String?   @db.VarChar(3)
+  created_date                              DateTime? @db.DateTime(0)
+  created_by                                String?   @db.VarChar(50)
+  created_reason_code                       String?   @db.VarChar(255)
+  created_comments                          String?   @db.VarChar(255)
+  account_id                                String?   @db.VarChar(36)
+  account_name                              String?   @db.VarChar(100)
+  account_external_key                      String?   @db.VarChar(255)
+  account_record_id                         BigInt?   @db.UnsignedBigInt
+  tenant_record_id                          BigInt?   @db.UnsignedBigInt
+  report_group                              String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_invoice_item_adjustments_account_id")
+  @@index([account_record_id], map: "analytics_invoice_item_adjustments_account_record_id")
+  @@index([invoice_id], map: "analytics_invoice_item_adjustments_invoice_id")
+  @@index([invoice_item_record_id], map: "analytics_invoice_item_adjustments_invoice_item_record_id")
+  @@index([item_id], map: "analytics_invoice_item_adjustments_item_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_invoice_item_adjustments_tenant_account_record_id")
+}
+
+model analytics_invoice_items {
+  record_id                                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  invoice_item_record_id                    BigInt?   @db.UnsignedBigInt
+  second_invoice_item_record_id             BigInt?   @db.UnsignedBigInt
+  item_id                                   String?   @db.VarChar(36)
+  invoice_id                                String?   @db.VarChar(36)
+  invoice_number                            BigInt?
+  invoice_created_date                      DateTime? @db.DateTime(0)
+  invoice_date                              DateTime? @db.Date
+  invoice_target_date                       DateTime? @db.Date
+  invoice_currency                          String?   @db.VarChar(50)
+  raw_invoice_balance                       Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_raw_invoice_balance             Decimal?  @db.Decimal(10, 4)
+  invoice_balance                           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_balance                 Decimal?  @db.Decimal(10, 4)
+  invoice_amount_paid                       Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_paid             Decimal?  @db.Decimal(10, 4)
+  invoice_amount_charged                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_charged          Decimal?  @db.Decimal(10, 4)
+  invoice_original_amount_charged           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_original_amount_charged Decimal?  @db.Decimal(10, 4)
+  invoice_amount_credited                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_credited         Decimal?  @db.Decimal(10, 4)
+  invoice_amount_refunded                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_refunded         Decimal?  @db.Decimal(10, 4)
+  invoice_written_off                       Boolean?  @default(false)
+  item_type                                 String?   @db.VarChar(50)
+  item_source                               String    @db.VarChar(50)
+  bundle_id                                 String?   @db.VarChar(36)
+  bundle_external_key                       String?   @db.VarChar(255)
+  product_name                              String?   @db.VarChar(255)
+  product_type                              String?   @db.VarChar(50)
+  product_category                          String?   @db.VarChar(50)
+  slug                                      String?   @db.VarChar(255)
+  usage_name                                String?   @db.VarChar(255)
+  phase                                     String?   @db.VarChar(255)
+  billing_period                            String?   @db.VarChar(50)
+  start_date                                DateTime? @db.Date
+  end_date                                  DateTime? @db.Date
+  amount                                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_amount                          Decimal?  @db.Decimal(10, 4)
+  currency                                  String?   @db.VarChar(50)
+  linked_item_id                            String?   @db.VarChar(36)
+  converted_currency                        String?   @db.VarChar(3)
+  created_date                              DateTime? @db.DateTime(0)
+  created_by                                String?   @db.VarChar(50)
+  created_reason_code                       String?   @db.VarChar(255)
+  created_comments                          String?   @db.VarChar(255)
+  account_id                                String?   @db.VarChar(36)
+  account_name                              String?   @db.VarChar(100)
+  account_external_key                      String?   @db.VarChar(255)
+  account_record_id                         BigInt?   @db.UnsignedBigInt
+  tenant_record_id                          BigInt?   @db.UnsignedBigInt
+  report_group                              String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_invoice_items_account_id")
+  @@index([account_record_id], map: "analytics_invoice_items_account_record_id")
+  @@index([invoice_id], map: "analytics_invoice_items_invoice_id")
+  @@index([invoice_item_record_id], map: "analytics_invoice_items_invoice_item_record_id")
+  @@index([item_id], map: "analytics_invoice_items_item_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_invoice_items_tenant_account_record_id")
+}
+
+model analytics_invoice_payment_fields {
+  record_id              BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  custom_field_record_id BigInt?   @db.UnsignedBigInt
+  invoice_payment_id     String?   @db.VarChar(36)
+  name                   String?   @db.VarChar(64)
+  field_value            String?   @db.VarChar(255)
+  created_date           DateTime? @db.DateTime(0)
+  created_by             String?   @db.VarChar(50)
+  created_reason_code    String?   @db.VarChar(255)
+  created_comments       String?   @db.VarChar(255)
+  account_id             String?   @db.VarChar(36)
+  account_name           String?   @db.VarChar(100)
+  account_external_key   String?   @db.VarChar(255)
+  account_record_id      BigInt?   @db.UnsignedBigInt
+  tenant_record_id       BigInt?   @db.UnsignedBigInt
+  report_group           String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_invoice_payment_fields_account_id")
+  @@index([account_record_id], map: "analytics_invoice_payment_fields_account_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_invoice_payment_fields_tenant_account_record_id")
+}
+
+model analytics_invoice_tags {
+  record_id            BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  tag_record_id        BigInt?   @db.UnsignedBigInt
+  invoice_id           String?   @db.VarChar(36)
+  name                 String?   @db.VarChar(50)
+  created_date         DateTime? @db.DateTime(0)
+  created_by           String?   @db.VarChar(50)
+  created_reason_code  String?   @db.VarChar(255)
+  created_comments     String?   @db.VarChar(255)
+  account_id           String?   @db.VarChar(36)
+  account_name         String?   @db.VarChar(100)
+  account_external_key String?   @db.VarChar(255)
+  account_record_id    BigInt?   @db.UnsignedBigInt
+  tenant_record_id     BigInt?   @db.UnsignedBigInt
+  report_group         String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_invoice_tags_account_id")
+  @@index([account_record_id], map: "analytics_invoice_tags_account_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_invoice_tags_tenant_account_record_id")
+}
+
+model analytics_invoices {
+  record_id                         BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  invoice_record_id                 BigInt?   @db.UnsignedBigInt
+  invoice_id                        String?   @db.VarChar(36)
+  invoice_number                    BigInt?
+  invoice_date                      DateTime? @db.Date
+  target_date                       DateTime? @db.Date
+  currency                          String?   @db.VarChar(50)
+  raw_balance                       Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_raw_balance             Decimal?  @db.Decimal(10, 4)
+  balance                           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_balance                 Decimal?  @db.Decimal(10, 4)
+  amount_paid                       Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_amount_paid             Decimal?  @db.Decimal(10, 4)
+  amount_charged                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_amount_charged          Decimal?  @db.Decimal(10, 4)
+  original_amount_charged           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_original_amount_charged Decimal?  @db.Decimal(10, 4)
+  amount_credited                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_amount_credited         Decimal?  @db.Decimal(10, 4)
+  amount_refunded                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_amount_refunded         Decimal?  @db.Decimal(10, 4)
+  converted_currency                String?   @db.VarChar(3)
+  written_off                       Boolean?  @default(false)
+  created_date                      DateTime? @db.DateTime(0)
+  created_by                        String?   @db.VarChar(50)
+  created_reason_code               String?   @db.VarChar(255)
+  created_comments                  String?   @db.VarChar(255)
+  account_id                        String?   @db.VarChar(36)
+  account_name                      String?   @db.VarChar(100)
+  account_external_key              String?   @db.VarChar(255)
+  account_record_id                 BigInt?   @db.UnsignedBigInt
+  tenant_record_id                  BigInt?   @db.UnsignedBigInt
+  report_group                      String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_invoices_account_id")
+  @@index([account_record_id], map: "analytics_invoices_account_record_id")
+  @@index([invoice_id], map: "analytics_invoices_invoice_id")
+  @@index([invoice_record_id], map: "analytics_invoices_invoice_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_invoices_tenant_account_record_id")
+}
+
+model analytics_notifications {
+  record_id                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  class_name                String    @db.VarChar(256)
+  event_json                String    @db.VarChar(2048)
+  user_token                String?   @db.VarChar(36)
+  created_date              DateTime  @db.DateTime(0)
+  creating_owner            String    @db.VarChar(50)
+  processing_owner          String?   @db.VarChar(50)
+  processing_available_date DateTime? @db.DateTime(0)
+  processing_state          String?   @default("AVAILABLE") @db.VarChar(14)
+  error_count               Int?      @default(0) @db.UnsignedInt
+  search_key1               Int?      @db.UnsignedInt
+  search_key2               Int?      @db.UnsignedInt
+  queue_name                String    @db.VarChar(64)
+  effective_date            DateTime  @db.DateTime(0)
+  future_user_token         String?   @db.VarChar(36)
+
+  @@index([effective_date, processing_state, processing_owner, processing_available_date], map: "analytics_notifications_comp_where")
+  @@index([effective_date, created_date], map: "analytics_notifications_get_ready")
+  @@index([search_key2, search_key1], map: "analytics_notifications_search_keys")
+  @@index([processing_state, processing_owner, processing_available_date], map: "analytics_notifications_update")
+}
+
+model analytics_notifications_history {
+  record_id                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  class_name                String    @db.VarChar(256)
+  event_json                String    @db.VarChar(2048)
+  user_token                String?   @db.VarChar(36)
+  created_date              DateTime  @db.DateTime(0)
+  creating_owner            String    @db.VarChar(50)
+  processing_owner          String?   @db.VarChar(50)
+  processing_available_date DateTime? @db.DateTime(0)
+  processing_state          String?   @default("AVAILABLE") @db.VarChar(14)
+  error_count               Int?      @default(0) @db.UnsignedInt
+  search_key1               Int?      @db.UnsignedInt
+  search_key2               Int?      @db.UnsignedInt
+  queue_name                String    @db.VarChar(64)
+  effective_date            DateTime  @db.DateTime(0)
+  future_user_token         String?   @db.VarChar(36)
+}
+
+model analytics_payment_auths {
+  record_id                                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  invoice_payment_record_id                 BigInt?   @db.UnsignedBigInt
+  invoice_payment_id                        String?   @db.VarChar(36)
+  invoice_id                                String?   @db.VarChar(36)
+  invoice_number                            BigInt?
+  invoice_created_date                      DateTime? @db.DateTime(0)
+  invoice_date                              DateTime? @db.Date
+  invoice_target_date                       DateTime? @db.Date
+  invoice_currency                          String?   @db.VarChar(50)
+  invoice_balance                           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_balance                 Decimal?  @db.Decimal(10, 4)
+  invoice_amount_paid                       Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_paid             Decimal?  @db.Decimal(10, 4)
+  invoice_amount_charged                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_charged          Decimal?  @db.Decimal(10, 4)
+  invoice_original_amount_charged           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_original_amount_charged Decimal?  @db.Decimal(10, 4)
+  invoice_amount_credited                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_credited         Decimal?  @db.Decimal(10, 4)
+  invoice_amount_refunded                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_refunded         Decimal?  @db.Decimal(10, 4)
+  invoice_payment_type                      String?   @db.VarChar(50)
+  payment_id                                String?   @db.VarChar(36)
+  refund_id                                 String?   @db.VarChar(36)
+  payment_number                            BigInt?
+  payment_external_key                      String?   @db.VarChar(255)
+  payment_transaction_id                    String?   @db.VarChar(36)
+  payment_transaction_external_key          String?   @db.VarChar(255)
+  payment_transaction_status                String?   @db.VarChar(255)
+  linked_invoice_payment_id                 String?   @db.VarChar(36)
+  amount                                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_amount                          Decimal?  @db.Decimal(10, 4)
+  currency                                  String?   @db.VarChar(50)
+  plugin_name                               String?   @db.VarChar(255)
+  payment_method_id                         String?   @db.VarChar(36)
+  payment_method_external_key               String?   @db.VarChar(255)
+  plugin_created_date                       DateTime? @db.DateTime(0)
+  plugin_effective_date                     DateTime? @db.DateTime(0)
+  plugin_status                             String?   @db.VarChar(255)
+  plugin_gateway_error                      String?   @db.Text
+  plugin_gateway_error_code                 String?   @db.VarChar(255)
+  plugin_first_reference_id                 String?   @db.VarChar(255)
+  plugin_second_reference_id                String?   @db.VarChar(255)
+  plugin_property_1                         String?   @db.VarChar(255)
+  plugin_property_2                         String?   @db.VarChar(255)
+  plugin_property_3                         String?   @db.VarChar(255)
+  plugin_property_4                         String?   @db.VarChar(255)
+  plugin_property_5                         String?   @db.VarChar(255)
+  plugin_pm_id                              String?   @db.VarChar(255)
+  plugin_pm_is_default                      Boolean?
+  plugin_pm_type                            String?   @db.VarChar(255)
+  plugin_pm_cc_name                         String?   @db.VarChar(255)
+  plugin_pm_cc_type                         String?   @db.VarChar(255)
+  plugin_pm_cc_expiration_month             String?   @db.VarChar(255)
+  plugin_pm_cc_expiration_year              String?   @db.VarChar(255)
+  plugin_pm_cc_last_4                       String?   @db.VarChar(255)
+  plugin_pm_address1                        String?   @db.VarChar(255)
+  plugin_pm_address2                        String?   @db.VarChar(255)
+  plugin_pm_city                            String?   @db.VarChar(255)
+  plugin_pm_state                           String?   @db.VarChar(255)
+  plugin_pm_zip                             String?   @db.VarChar(255)
+  plugin_pm_country                         String?   @db.VarChar(255)
+  converted_currency                        String?   @db.VarChar(3)
+  created_date                              DateTime? @db.DateTime(0)
+  created_by                                String?   @db.VarChar(50)
+  created_reason_code                       String?   @db.VarChar(255)
+  created_comments                          String?   @db.VarChar(255)
+  account_id                                String?   @db.VarChar(36)
+  account_name                              String?   @db.VarChar(100)
+  account_external_key                      String?   @db.VarChar(255)
+  account_record_id                         BigInt?   @db.UnsignedBigInt
+  tenant_record_id                          BigInt?   @db.UnsignedBigInt
+  report_group                              String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_payment_auths_account_id")
+  @@index([account_record_id], map: "analytics_payment_auths_account_record_id")
+  @@index([created_date, tenant_record_id, currency, payment_transaction_status, report_group, converted_amount], map: "analytics_payment_auths_cdate_trid_crcy_status_rgroup_camount")
+  @@index([created_date], map: "analytics_payment_auths_created_date")
+  @@index([created_date, tenant_record_id, plugin_name], map: "analytics_payment_auths_date_trid_plugin_name")
+  @@index([invoice_id], map: "analytics_payment_auths_invoice_id")
+  @@index([invoice_payment_id], map: "analytics_payment_auths_invoice_payment_id")
+  @@index([invoice_payment_record_id], map: "analytics_payment_auths_invoice_payment_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_payment_auths_tenant_account_record_id")
+  @@index([created_date, tenant_record_id, currency, payment_transaction_status, report_group, plugin_name, plugin_gateway_error(length: 80)], map: "ap_auths_cdate_trid_crcy_status_rgroup_camount_pname_perror")
+}
+
+model analytics_payment_captures {
+  record_id                                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  invoice_payment_record_id                 BigInt?   @db.UnsignedBigInt
+  invoice_payment_id                        String?   @db.VarChar(36)
+  invoice_id                                String?   @db.VarChar(36)
+  invoice_number                            BigInt?
+  invoice_created_date                      DateTime? @db.DateTime(0)
+  invoice_date                              DateTime? @db.Date
+  invoice_target_date                       DateTime? @db.Date
+  invoice_currency                          String?   @db.VarChar(50)
+  invoice_balance                           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_balance                 Decimal?  @db.Decimal(10, 4)
+  invoice_amount_paid                       Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_paid             Decimal?  @db.Decimal(10, 4)
+  invoice_amount_charged                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_charged          Decimal?  @db.Decimal(10, 4)
+  invoice_original_amount_charged           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_original_amount_charged Decimal?  @db.Decimal(10, 4)
+  invoice_amount_credited                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_credited         Decimal?  @db.Decimal(10, 4)
+  invoice_amount_refunded                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_refunded         Decimal?  @db.Decimal(10, 4)
+  invoice_payment_type                      String?   @db.VarChar(50)
+  payment_id                                String?   @db.VarChar(36)
+  refund_id                                 String?   @db.VarChar(36)
+  payment_number                            BigInt?
+  payment_external_key                      String?   @db.VarChar(255)
+  payment_transaction_id                    String?   @db.VarChar(36)
+  payment_transaction_external_key          String?   @db.VarChar(255)
+  payment_transaction_status                String?   @db.VarChar(255)
+  linked_invoice_payment_id                 String?   @db.VarChar(36)
+  amount                                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_amount                          Decimal?  @db.Decimal(10, 4)
+  currency                                  String?   @db.VarChar(50)
+  plugin_name                               String?   @db.VarChar(255)
+  payment_method_id                         String?   @db.VarChar(36)
+  payment_method_external_key               String?   @db.VarChar(255)
+  plugin_created_date                       DateTime? @db.DateTime(0)
+  plugin_effective_date                     DateTime? @db.DateTime(0)
+  plugin_status                             String?   @db.VarChar(255)
+  plugin_gateway_error                      String?   @db.Text
+  plugin_gateway_error_code                 String?   @db.VarChar(255)
+  plugin_first_reference_id                 String?   @db.VarChar(255)
+  plugin_second_reference_id                String?   @db.VarChar(255)
+  plugin_property_1                         String?   @db.VarChar(255)
+  plugin_property_2                         String?   @db.VarChar(255)
+  plugin_property_3                         String?   @db.VarChar(255)
+  plugin_property_4                         String?   @db.VarChar(255)
+  plugin_property_5                         String?   @db.VarChar(255)
+  plugin_pm_id                              String?   @db.VarChar(255)
+  plugin_pm_is_default                      Boolean?
+  plugin_pm_type                            String?   @db.VarChar(255)
+  plugin_pm_cc_name                         String?   @db.VarChar(255)
+  plugin_pm_cc_type                         String?   @db.VarChar(255)
+  plugin_pm_cc_expiration_month             String?   @db.VarChar(255)
+  plugin_pm_cc_expiration_year              String?   @db.VarChar(255)
+  plugin_pm_cc_last_4                       String?   @db.VarChar(255)
+  plugin_pm_address1                        String?   @db.VarChar(255)
+  plugin_pm_address2                        String?   @db.VarChar(255)
+  plugin_pm_city                            String?   @db.VarChar(255)
+  plugin_pm_state                           String?   @db.VarChar(255)
+  plugin_pm_zip                             String?   @db.VarChar(255)
+  plugin_pm_country                         String?   @db.VarChar(255)
+  converted_currency                        String?   @db.VarChar(3)
+  created_date                              DateTime? @db.DateTime(0)
+  created_by                                String?   @db.VarChar(50)
+  created_reason_code                       String?   @db.VarChar(255)
+  created_comments                          String?   @db.VarChar(255)
+  account_id                                String?   @db.VarChar(36)
+  account_name                              String?   @db.VarChar(100)
+  account_external_key                      String?   @db.VarChar(255)
+  account_record_id                         BigInt?   @db.UnsignedBigInt
+  tenant_record_id                          BigInt?   @db.UnsignedBigInt
+  report_group                              String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_payment_captures_account_id")
+  @@index([account_record_id], map: "analytics_payment_captures_account_record_id")
+  @@index([created_date, tenant_record_id, currency, payment_transaction_status, report_group, converted_amount], map: "analytics_payment_captures_cdate_trid_crcy_status_rgroup_camount")
+  @@index([created_date], map: "analytics_payment_captures_created_date")
+  @@index([created_date, tenant_record_id, plugin_name], map: "analytics_payment_captures_date_trid_plugin_name")
+  @@index([invoice_id], map: "analytics_payment_captures_invoice_id")
+  @@index([invoice_payment_id], map: "analytics_payment_captures_invoice_payment_id")
+  @@index([invoice_payment_record_id], map: "analytics_payment_captures_invoice_payment_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_payment_captures_tenant_account_record_id")
+  @@index([created_date, tenant_record_id, currency, payment_transaction_status, report_group, plugin_name, plugin_gateway_error(length: 80)], map: "ap_captures_cdate_trid_crcy_status_rgroup_camount_pname_perror")
+}
+
+model analytics_payment_chargebacks {
+  record_id                                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  invoice_payment_record_id                 BigInt?   @db.UnsignedBigInt
+  invoice_payment_id                        String?   @db.VarChar(36)
+  invoice_id                                String?   @db.VarChar(36)
+  invoice_number                            BigInt?
+  invoice_created_date                      DateTime? @db.DateTime(0)
+  invoice_date                              DateTime? @db.Date
+  invoice_target_date                       DateTime? @db.Date
+  invoice_currency                          String?   @db.VarChar(50)
+  invoice_balance                           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_balance                 Decimal?  @db.Decimal(10, 4)
+  invoice_amount_paid                       Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_paid             Decimal?  @db.Decimal(10, 4)
+  invoice_amount_charged                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_charged          Decimal?  @db.Decimal(10, 4)
+  invoice_original_amount_charged           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_original_amount_charged Decimal?  @db.Decimal(10, 4)
+  invoice_amount_credited                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_credited         Decimal?  @db.Decimal(10, 4)
+  invoice_amount_refunded                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_refunded         Decimal?  @db.Decimal(10, 4)
+  invoice_payment_type                      String?   @db.VarChar(50)
+  payment_id                                String?   @db.VarChar(36)
+  refund_id                                 String?   @db.VarChar(36)
+  payment_number                            BigInt?
+  payment_external_key                      String?   @db.VarChar(255)
+  payment_transaction_id                    String?   @db.VarChar(36)
+  payment_transaction_external_key          String?   @db.VarChar(255)
+  payment_transaction_status                String?   @db.VarChar(255)
+  linked_invoice_payment_id                 String?   @db.VarChar(36)
+  amount                                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_amount                          Decimal?  @db.Decimal(10, 4)
+  currency                                  String?   @db.VarChar(50)
+  plugin_name                               String?   @db.VarChar(255)
+  payment_method_id                         String?   @db.VarChar(36)
+  payment_method_external_key               String?   @db.VarChar(255)
+  plugin_created_date                       DateTime? @db.DateTime(0)
+  plugin_effective_date                     DateTime? @db.DateTime(0)
+  plugin_status                             String?   @db.VarChar(255)
+  plugin_gateway_error                      String?   @db.Text
+  plugin_gateway_error_code                 String?   @db.VarChar(255)
+  plugin_first_reference_id                 String?   @db.VarChar(255)
+  plugin_second_reference_id                String?   @db.VarChar(255)
+  plugin_property_1                         String?   @db.VarChar(255)
+  plugin_property_2                         String?   @db.VarChar(255)
+  plugin_property_3                         String?   @db.VarChar(255)
+  plugin_property_4                         String?   @db.VarChar(255)
+  plugin_property_5                         String?   @db.VarChar(255)
+  plugin_pm_id                              String?   @db.VarChar(255)
+  plugin_pm_is_default                      Boolean?
+  plugin_pm_type                            String?   @db.VarChar(255)
+  plugin_pm_cc_name                         String?   @db.VarChar(255)
+  plugin_pm_cc_type                         String?   @db.VarChar(255)
+  plugin_pm_cc_expiration_month             String?   @db.VarChar(255)
+  plugin_pm_cc_expiration_year              String?   @db.VarChar(255)
+  plugin_pm_cc_last_4                       String?   @db.VarChar(255)
+  plugin_pm_address1                        String?   @db.VarChar(255)
+  plugin_pm_address2                        String?   @db.VarChar(255)
+  plugin_pm_city                            String?   @db.VarChar(255)
+  plugin_pm_state                           String?   @db.VarChar(255)
+  plugin_pm_zip                             String?   @db.VarChar(255)
+  plugin_pm_country                         String?   @db.VarChar(255)
+  converted_currency                        String?   @db.VarChar(3)
+  created_date                              DateTime? @db.DateTime(0)
+  created_by                                String?   @db.VarChar(50)
+  created_reason_code                       String?   @db.VarChar(255)
+  created_comments                          String?   @db.VarChar(255)
+  account_id                                String?   @db.VarChar(36)
+  account_name                              String?   @db.VarChar(100)
+  account_external_key                      String?   @db.VarChar(255)
+  account_record_id                         BigInt?   @db.UnsignedBigInt
+  tenant_record_id                          BigInt?   @db.UnsignedBigInt
+  report_group                              String    @db.VarChar(50)
+
+  @@index([created_date, tenant_record_id, currency, payment_transaction_status, report_group, converted_amount], map: "analytics_payment_cbacks_cdate_trid_crcy_status_rgroup_camount")
+  @@index([account_id], map: "analytics_payment_chargebacks_account_id")
+  @@index([account_record_id], map: "analytics_payment_chargebacks_account_record_id")
+  @@index([created_date], map: "analytics_payment_chargebacks_created_date")
+  @@index([created_date, tenant_record_id, plugin_name], map: "analytics_payment_chargebacks_date_trid_plugin_name")
+  @@index([invoice_id], map: "analytics_payment_chargebacks_invoice_id")
+  @@index([invoice_payment_id], map: "analytics_payment_chargebacks_invoice_payment_id")
+  @@index([invoice_payment_record_id], map: "analytics_payment_chargebacks_invoice_payment_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_payment_chargebacks_tenant_account_record_id")
+  @@index([created_date, tenant_record_id, currency, payment_transaction_status, report_group, plugin_name, plugin_gateway_error(length: 80)], map: "ap_cbacks_cdate_trid_crcy_status_rgroup_camount_pname_perror")
+}
+
+model analytics_payment_credits {
+  record_id                                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  invoice_payment_record_id                 BigInt?   @db.UnsignedBigInt
+  invoice_payment_id                        String?   @db.VarChar(36)
+  invoice_id                                String?   @db.VarChar(36)
+  invoice_number                            BigInt?
+  invoice_created_date                      DateTime? @db.DateTime(0)
+  invoice_date                              DateTime? @db.Date
+  invoice_target_date                       DateTime? @db.Date
+  invoice_currency                          String?   @db.VarChar(50)
+  invoice_balance                           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_balance                 Decimal?  @db.Decimal(10, 4)
+  invoice_amount_paid                       Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_paid             Decimal?  @db.Decimal(10, 4)
+  invoice_amount_charged                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_charged          Decimal?  @db.Decimal(10, 4)
+  invoice_original_amount_charged           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_original_amount_charged Decimal?  @db.Decimal(10, 4)
+  invoice_amount_credited                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_credited         Decimal?  @db.Decimal(10, 4)
+  invoice_amount_refunded                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_refunded         Decimal?  @db.Decimal(10, 4)
+  invoice_payment_type                      String?   @db.VarChar(50)
+  payment_id                                String?   @db.VarChar(36)
+  refund_id                                 String?   @db.VarChar(36)
+  payment_number                            BigInt?
+  payment_external_key                      String?   @db.VarChar(255)
+  payment_transaction_id                    String?   @db.VarChar(36)
+  payment_transaction_external_key          String?   @db.VarChar(255)
+  payment_transaction_status                String?   @db.VarChar(255)
+  linked_invoice_payment_id                 String?   @db.VarChar(36)
+  amount                                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_amount                          Decimal?  @db.Decimal(10, 4)
+  currency                                  String?   @db.VarChar(50)
+  plugin_name                               String?   @db.VarChar(255)
+  payment_method_id                         String?   @db.VarChar(36)
+  payment_method_external_key               String?   @db.VarChar(255)
+  plugin_created_date                       DateTime? @db.DateTime(0)
+  plugin_effective_date                     DateTime? @db.DateTime(0)
+  plugin_status                             String?   @db.VarChar(255)
+  plugin_gateway_error                      String?   @db.Text
+  plugin_gateway_error_code                 String?   @db.VarChar(255)
+  plugin_first_reference_id                 String?   @db.VarChar(255)
+  plugin_second_reference_id                String?   @db.VarChar(255)
+  plugin_property_1                         String?   @db.VarChar(255)
+  plugin_property_2                         String?   @db.VarChar(255)
+  plugin_property_3                         String?   @db.VarChar(255)
+  plugin_property_4                         String?   @db.VarChar(255)
+  plugin_property_5                         String?   @db.VarChar(255)
+  plugin_pm_id                              String?   @db.VarChar(255)
+  plugin_pm_is_default                      Boolean?
+  plugin_pm_type                            String?   @db.VarChar(255)
+  plugin_pm_cc_name                         String?   @db.VarChar(255)
+  plugin_pm_cc_type                         String?   @db.VarChar(255)
+  plugin_pm_cc_expiration_month             String?   @db.VarChar(255)
+  plugin_pm_cc_expiration_year              String?   @db.VarChar(255)
+  plugin_pm_cc_last_4                       String?   @db.VarChar(255)
+  plugin_pm_address1                        String?   @db.VarChar(255)
+  plugin_pm_address2                        String?   @db.VarChar(255)
+  plugin_pm_city                            String?   @db.VarChar(255)
+  plugin_pm_state                           String?   @db.VarChar(255)
+  plugin_pm_zip                             String?   @db.VarChar(255)
+  plugin_pm_country                         String?   @db.VarChar(255)
+  converted_currency                        String?   @db.VarChar(3)
+  created_date                              DateTime? @db.DateTime(0)
+  created_by                                String?   @db.VarChar(50)
+  created_reason_code                       String?   @db.VarChar(255)
+  created_comments                          String?   @db.VarChar(255)
+  account_id                                String?   @db.VarChar(36)
+  account_name                              String?   @db.VarChar(100)
+  account_external_key                      String?   @db.VarChar(255)
+  account_record_id                         BigInt?   @db.UnsignedBigInt
+  tenant_record_id                          BigInt?   @db.UnsignedBigInt
+  report_group                              String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_payment_credits_account_id")
+  @@index([account_record_id], map: "analytics_payment_credits_account_record_id")
+  @@index([created_date, tenant_record_id, currency, payment_transaction_status, report_group, converted_amount], map: "analytics_payment_credits_cdate_trid_crcy_status_rgroup_camount")
+  @@index([created_date], map: "analytics_payment_credits_created_date")
+  @@index([created_date, tenant_record_id, plugin_name], map: "analytics_payment_credits_date_trid_plugin_name")
+  @@index([invoice_id], map: "analytics_payment_credits_invoice_id")
+  @@index([invoice_payment_id], map: "analytics_payment_credits_invoice_payment_id")
+  @@index([invoice_payment_record_id], map: "analytics_payment_credits_invoice_payment_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_payment_credits_tenant_account_record_id")
+  @@index([created_date, tenant_record_id, currency, payment_transaction_status, report_group, plugin_name, plugin_gateway_error(length: 80)], map: "ap_credits_cdate_trid_crcy_status_rgroup_camount_pname_perror")
+}
+
+model analytics_payment_fields {
+  record_id              BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  custom_field_record_id BigInt?   @db.UnsignedBigInt
+  payment_id             String?   @db.VarChar(36)
+  name                   String?   @db.VarChar(64)
+  field_value            String?   @db.VarChar(255)
+  created_date           DateTime? @db.DateTime(0)
+  created_by             String?   @db.VarChar(50)
+  created_reason_code    String?   @db.VarChar(255)
+  created_comments       String?   @db.VarChar(255)
+  account_id             String?   @db.VarChar(36)
+  account_name           String?   @db.VarChar(100)
+  account_external_key   String?   @db.VarChar(255)
+  account_record_id      BigInt?   @db.UnsignedBigInt
+  tenant_record_id       BigInt?   @db.UnsignedBigInt
+  report_group           String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_payment_fields_account_id")
+  @@index([account_record_id], map: "analytics_payment_fields_account_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_payment_fields_tenant_account_record_id")
+}
+
+model analytics_payment_method_fields {
+  record_id              BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  custom_field_record_id BigInt?   @db.UnsignedBigInt
+  payment_method_id      String?   @db.VarChar(36)
+  name                   String?   @db.VarChar(64)
+  field_value            String?   @db.VarChar(255)
+  created_date           DateTime? @db.DateTime(0)
+  created_by             String?   @db.VarChar(50)
+  created_reason_code    String?   @db.VarChar(255)
+  created_comments       String?   @db.VarChar(255)
+  account_id             String?   @db.VarChar(36)
+  account_name           String?   @db.VarChar(100)
+  account_external_key   String?   @db.VarChar(255)
+  account_record_id      BigInt?   @db.UnsignedBigInt
+  tenant_record_id       BigInt?   @db.UnsignedBigInt
+  report_group           String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_payment_method_fields_account_id")
+  @@index([account_record_id], map: "analytics_payment_method_fields_account_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_payment_method_fields_tenant_account_record_id")
+}
+
+model analytics_payment_purchases {
+  record_id                                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  invoice_payment_record_id                 BigInt?   @db.UnsignedBigInt
+  invoice_payment_id                        String?   @db.VarChar(36)
+  invoice_id                                String?   @db.VarChar(36)
+  invoice_number                            BigInt?
+  invoice_created_date                      DateTime? @db.DateTime(0)
+  invoice_date                              DateTime? @db.Date
+  invoice_target_date                       DateTime? @db.Date
+  invoice_currency                          String?   @db.VarChar(50)
+  invoice_balance                           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_balance                 Decimal?  @db.Decimal(10, 4)
+  invoice_amount_paid                       Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_paid             Decimal?  @db.Decimal(10, 4)
+  invoice_amount_charged                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_charged          Decimal?  @db.Decimal(10, 4)
+  invoice_original_amount_charged           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_original_amount_charged Decimal?  @db.Decimal(10, 4)
+  invoice_amount_credited                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_credited         Decimal?  @db.Decimal(10, 4)
+  invoice_amount_refunded                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_refunded         Decimal?  @db.Decimal(10, 4)
+  invoice_payment_type                      String?   @db.VarChar(50)
+  payment_id                                String?   @db.VarChar(36)
+  refund_id                                 String?   @db.VarChar(36)
+  payment_number                            BigInt?
+  payment_external_key                      String?   @db.VarChar(255)
+  payment_transaction_id                    String?   @db.VarChar(36)
+  payment_transaction_external_key          String?   @db.VarChar(255)
+  payment_transaction_status                String?   @db.VarChar(255)
+  linked_invoice_payment_id                 String?   @db.VarChar(36)
+  amount                                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_amount                          Decimal?  @db.Decimal(10, 4)
+  currency                                  String?   @db.VarChar(50)
+  plugin_name                               String?   @db.VarChar(255)
+  payment_method_id                         String?   @db.VarChar(36)
+  payment_method_external_key               String?   @db.VarChar(255)
+  plugin_created_date                       DateTime? @db.DateTime(0)
+  plugin_effective_date                     DateTime? @db.DateTime(0)
+  plugin_status                             String?   @db.VarChar(255)
+  plugin_gateway_error                      String?   @db.Text
+  plugin_gateway_error_code                 String?   @db.VarChar(255)
+  plugin_first_reference_id                 String?   @db.VarChar(255)
+  plugin_second_reference_id                String?   @db.VarChar(255)
+  plugin_property_1                         String?   @db.VarChar(255)
+  plugin_property_2                         String?   @db.VarChar(255)
+  plugin_property_3                         String?   @db.VarChar(255)
+  plugin_property_4                         String?   @db.VarChar(255)
+  plugin_property_5                         String?   @db.VarChar(255)
+  plugin_pm_id                              String?   @db.VarChar(255)
+  plugin_pm_is_default                      Boolean?
+  plugin_pm_type                            String?   @db.VarChar(255)
+  plugin_pm_cc_name                         String?   @db.VarChar(255)
+  plugin_pm_cc_type                         String?   @db.VarChar(255)
+  plugin_pm_cc_expiration_month             String?   @db.VarChar(255)
+  plugin_pm_cc_expiration_year              String?   @db.VarChar(255)
+  plugin_pm_cc_last_4                       String?   @db.VarChar(255)
+  plugin_pm_address1                        String?   @db.VarChar(255)
+  plugin_pm_address2                        String?   @db.VarChar(255)
+  plugin_pm_city                            String?   @db.VarChar(255)
+  plugin_pm_state                           String?   @db.VarChar(255)
+  plugin_pm_zip                             String?   @db.VarChar(255)
+  plugin_pm_country                         String?   @db.VarChar(255)
+  converted_currency                        String?   @db.VarChar(3)
+  created_date                              DateTime? @db.DateTime(0)
+  created_by                                String?   @db.VarChar(50)
+  created_reason_code                       String?   @db.VarChar(255)
+  created_comments                          String?   @db.VarChar(255)
+  account_id                                String?   @db.VarChar(36)
+  account_name                              String?   @db.VarChar(100)
+  account_external_key                      String?   @db.VarChar(255)
+  account_record_id                         BigInt?   @db.UnsignedBigInt
+  tenant_record_id                          BigInt?   @db.UnsignedBigInt
+  report_group                              String    @db.VarChar(50)
+
+  @@index([created_date, tenant_record_id, currency, payment_transaction_status, report_group, converted_amount], map: "analytics_payment_prchses_cdate_trid_crcy_status_rgroup_camount")
+  @@index([account_id], map: "analytics_payment_purchases_account_id")
+  @@index([account_record_id], map: "analytics_payment_purchases_account_record_id")
+  @@index([created_date], map: "analytics_payment_purchases_created_date")
+  @@index([created_date, tenant_record_id, plugin_name], map: "analytics_payment_purchases_date_trid_plugin_name")
+  @@index([invoice_id], map: "analytics_payment_purchases_invoice_id")
+  @@index([invoice_payment_id], map: "analytics_payment_purchases_invoice_payment_id")
+  @@index([invoice_payment_record_id], map: "analytics_payment_purchases_invoice_payment_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_payment_purchases_tenant_account_record_id")
+  @@index([created_date, tenant_record_id, currency, payment_transaction_status, report_group, plugin_name, plugin_gateway_error(length: 80)], map: "ap_prchses_cdate_trid_crcy_status_rgroup_camount_pname_perror")
+}
+
+model analytics_payment_refunds {
+  record_id                                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  invoice_payment_record_id                 BigInt?   @db.UnsignedBigInt
+  invoice_payment_id                        String?   @db.VarChar(36)
+  invoice_id                                String?   @db.VarChar(36)
+  invoice_number                            BigInt?
+  invoice_created_date                      DateTime? @db.DateTime(0)
+  invoice_date                              DateTime? @db.Date
+  invoice_target_date                       DateTime? @db.Date
+  invoice_currency                          String?   @db.VarChar(50)
+  invoice_balance                           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_balance                 Decimal?  @db.Decimal(10, 4)
+  invoice_amount_paid                       Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_paid             Decimal?  @db.Decimal(10, 4)
+  invoice_amount_charged                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_charged          Decimal?  @db.Decimal(10, 4)
+  invoice_original_amount_charged           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_original_amount_charged Decimal?  @db.Decimal(10, 4)
+  invoice_amount_credited                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_credited         Decimal?  @db.Decimal(10, 4)
+  invoice_amount_refunded                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_refunded         Decimal?  @db.Decimal(10, 4)
+  invoice_payment_type                      String?   @db.VarChar(50)
+  payment_id                                String?   @db.VarChar(36)
+  refund_id                                 String?   @db.VarChar(36)
+  payment_number                            BigInt?
+  payment_external_key                      String?   @db.VarChar(255)
+  payment_transaction_id                    String?   @db.VarChar(36)
+  payment_transaction_external_key          String?   @db.VarChar(255)
+  payment_transaction_status                String?   @db.VarChar(255)
+  linked_invoice_payment_id                 String?   @db.VarChar(36)
+  amount                                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_amount                          Decimal?  @db.Decimal(10, 4)
+  currency                                  String?   @db.VarChar(50)
+  plugin_name                               String?   @db.VarChar(255)
+  payment_method_id                         String?   @db.VarChar(36)
+  payment_method_external_key               String?   @db.VarChar(255)
+  plugin_created_date                       DateTime? @db.DateTime(0)
+  plugin_effective_date                     DateTime? @db.DateTime(0)
+  plugin_status                             String?   @db.VarChar(255)
+  plugin_gateway_error                      String?   @db.Text
+  plugin_gateway_error_code                 String?   @db.VarChar(255)
+  plugin_first_reference_id                 String?   @db.VarChar(255)
+  plugin_second_reference_id                String?   @db.VarChar(255)
+  plugin_property_1                         String?   @db.VarChar(255)
+  plugin_property_2                         String?   @db.VarChar(255)
+  plugin_property_3                         String?   @db.VarChar(255)
+  plugin_property_4                         String?   @db.VarChar(255)
+  plugin_property_5                         String?   @db.VarChar(255)
+  plugin_pm_id                              String?   @db.VarChar(255)
+  plugin_pm_is_default                      Boolean?
+  plugin_pm_type                            String?   @db.VarChar(255)
+  plugin_pm_cc_name                         String?   @db.VarChar(255)
+  plugin_pm_cc_type                         String?   @db.VarChar(255)
+  plugin_pm_cc_expiration_month             String?   @db.VarChar(255)
+  plugin_pm_cc_expiration_year              String?   @db.VarChar(255)
+  plugin_pm_cc_last_4                       String?   @db.VarChar(255)
+  plugin_pm_address1                        String?   @db.VarChar(255)
+  plugin_pm_address2                        String?   @db.VarChar(255)
+  plugin_pm_city                            String?   @db.VarChar(255)
+  plugin_pm_state                           String?   @db.VarChar(255)
+  plugin_pm_zip                             String?   @db.VarChar(255)
+  plugin_pm_country                         String?   @db.VarChar(255)
+  converted_currency                        String?   @db.VarChar(3)
+  created_date                              DateTime? @db.DateTime(0)
+  created_by                                String?   @db.VarChar(50)
+  created_reason_code                       String?   @db.VarChar(255)
+  created_comments                          String?   @db.VarChar(255)
+  account_id                                String?   @db.VarChar(36)
+  account_name                              String?   @db.VarChar(100)
+  account_external_key                      String?   @db.VarChar(255)
+  account_record_id                         BigInt?   @db.UnsignedBigInt
+  tenant_record_id                          BigInt?   @db.UnsignedBigInt
+  report_group                              String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_payment_refunds_account_id")
+  @@index([account_record_id], map: "analytics_payment_refunds_account_record_id")
+  @@index([created_date, tenant_record_id, currency, payment_transaction_status, report_group, converted_amount], map: "analytics_payment_refunds_cdate_trid_crcy_status_rgroup_camount")
+  @@index([created_date], map: "analytics_payment_refunds_created_date")
+  @@index([created_date, tenant_record_id, plugin_name], map: "analytics_payment_refunds_date_trid_plugin_name")
+  @@index([invoice_id], map: "analytics_payment_refunds_invoice_id")
+  @@index([invoice_payment_id], map: "analytics_payment_refunds_invoice_payment_id")
+  @@index([invoice_payment_record_id], map: "analytics_payment_refunds_invoice_payment_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_payment_refunds_tenant_account_record_id")
+  @@index([created_date, tenant_record_id, currency, payment_transaction_status, report_group, plugin_name, plugin_gateway_error(length: 80)], map: "ap_refunds_cdate_trid_crcy_status_rgroup_camount_pname_perror")
+}
+
+model analytics_payment_tags {
+  record_id            BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  tag_record_id        BigInt?   @db.UnsignedBigInt
+  invoice_payment_id   String?   @db.VarChar(36)
+  name                 String?   @db.VarChar(50)
+  created_date         DateTime? @db.DateTime(0)
+  created_by           String?   @db.VarChar(50)
+  created_reason_code  String?   @db.VarChar(255)
+  created_comments     String?   @db.VarChar(255)
+  account_id           String?   @db.VarChar(36)
+  account_name         String?   @db.VarChar(100)
+  account_external_key String?   @db.VarChar(255)
+  account_record_id    BigInt?   @db.UnsignedBigInt
+  tenant_record_id     BigInt?   @db.UnsignedBigInt
+  report_group         String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_payment_tags_account_id")
+  @@index([account_record_id], map: "analytics_payment_tags_account_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_payment_tags_tenant_account_record_id")
+}
+
+model analytics_payment_voids {
+  record_id                                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  invoice_payment_record_id                 BigInt?   @db.UnsignedBigInt
+  invoice_payment_id                        String?   @db.VarChar(36)
+  invoice_id                                String?   @db.VarChar(36)
+  invoice_number                            BigInt?
+  invoice_created_date                      DateTime? @db.DateTime(0)
+  invoice_date                              DateTime? @db.Date
+  invoice_target_date                       DateTime? @db.Date
+  invoice_currency                          String?   @db.VarChar(50)
+  invoice_balance                           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_balance                 Decimal?  @db.Decimal(10, 4)
+  invoice_amount_paid                       Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_paid             Decimal?  @db.Decimal(10, 4)
+  invoice_amount_charged                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_charged          Decimal?  @db.Decimal(10, 4)
+  invoice_original_amount_charged           Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_original_amount_charged Decimal?  @db.Decimal(10, 4)
+  invoice_amount_credited                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_credited         Decimal?  @db.Decimal(10, 4)
+  invoice_amount_refunded                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_invoice_amount_refunded         Decimal?  @db.Decimal(10, 4)
+  invoice_payment_type                      String?   @db.VarChar(50)
+  payment_id                                String?   @db.VarChar(36)
+  refund_id                                 String?   @db.VarChar(36)
+  payment_number                            BigInt?
+  payment_external_key                      String?   @db.VarChar(255)
+  payment_transaction_id                    String?   @db.VarChar(36)
+  payment_transaction_external_key          String?   @db.VarChar(255)
+  payment_transaction_status                String?   @db.VarChar(255)
+  linked_invoice_payment_id                 String?   @db.VarChar(36)
+  amount                                    Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_amount                          Decimal?  @db.Decimal(10, 4)
+  currency                                  String?   @db.VarChar(50)
+  plugin_name                               String?   @db.VarChar(255)
+  payment_method_id                         String?   @db.VarChar(36)
+  payment_method_external_key               String?   @db.VarChar(255)
+  plugin_created_date                       DateTime? @db.DateTime(0)
+  plugin_effective_date                     DateTime? @db.DateTime(0)
+  plugin_status                             String?   @db.VarChar(255)
+  plugin_gateway_error                      String?   @db.Text
+  plugin_gateway_error_code                 String?   @db.VarChar(255)
+  plugin_first_reference_id                 String?   @db.VarChar(255)
+  plugin_second_reference_id                String?   @db.VarChar(255)
+  plugin_property_1                         String?   @db.VarChar(255)
+  plugin_property_2                         String?   @db.VarChar(255)
+  plugin_property_3                         String?   @db.VarChar(255)
+  plugin_property_4                         String?   @db.VarChar(255)
+  plugin_property_5                         String?   @db.VarChar(255)
+  plugin_pm_id                              String?   @db.VarChar(255)
+  plugin_pm_is_default                      Boolean?
+  plugin_pm_type                            String?   @db.VarChar(255)
+  plugin_pm_cc_name                         String?   @db.VarChar(255)
+  plugin_pm_cc_type                         String?   @db.VarChar(255)
+  plugin_pm_cc_expiration_month             String?   @db.VarChar(255)
+  plugin_pm_cc_expiration_year              String?   @db.VarChar(255)
+  plugin_pm_cc_last_4                       String?   @db.VarChar(255)
+  plugin_pm_address1                        String?   @db.VarChar(255)
+  plugin_pm_address2                        String?   @db.VarChar(255)
+  plugin_pm_city                            String?   @db.VarChar(255)
+  plugin_pm_state                           String?   @db.VarChar(255)
+  plugin_pm_zip                             String?   @db.VarChar(255)
+  plugin_pm_country                         String?   @db.VarChar(255)
+  converted_currency                        String?   @db.VarChar(3)
+  created_date                              DateTime? @db.DateTime(0)
+  created_by                                String?   @db.VarChar(50)
+  created_reason_code                       String?   @db.VarChar(255)
+  created_comments                          String?   @db.VarChar(255)
+  account_id                                String?   @db.VarChar(36)
+  account_name                              String?   @db.VarChar(100)
+  account_external_key                      String?   @db.VarChar(255)
+  account_record_id                         BigInt?   @db.UnsignedBigInt
+  tenant_record_id                          BigInt?   @db.UnsignedBigInt
+  report_group                              String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_payment_voids_account_id")
+  @@index([account_record_id], map: "analytics_payment_voids_account_record_id")
+  @@index([created_date, tenant_record_id, currency, payment_transaction_status, report_group, converted_amount], map: "analytics_payment_voids_cdate_trid_crcy_status_rgroup_camount")
+  @@index([created_date], map: "analytics_payment_voids_created_date")
+  @@index([created_date, tenant_record_id, plugin_name], map: "analytics_payment_voids_date_trid_plugin_name")
+  @@index([invoice_id], map: "analytics_payment_voids_invoice_id")
+  @@index([invoice_payment_id], map: "analytics_payment_voids_invoice_payment_id")
+  @@index([invoice_payment_record_id], map: "analytics_payment_voids_invoice_payment_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_payment_voids_tenant_account_record_id")
+  @@index([created_date, tenant_record_id, currency, payment_transaction_status, report_group, plugin_name, plugin_gateway_error(length: 80)], map: "ap_voids_cdate_trid_crcy_status_rgroup_camount_pname_perror")
+}
+
+model analytics_reports {
+  record_id               BigInt  @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  report_name             String  @unique(map: "analytics_reports_report_name") @db.VarChar(100)
+  report_pretty_name      String? @db.VarChar(256)
+  report_type             String  @default("TIMELINE") @db.VarChar(24)
+  source_table_name       String? @db.VarChar(256)
+  source_name             String? @db.VarChar(256)
+  source_query            String? @db.VarChar(4096)
+  refresh_procedure_name  String? @db.VarChar(256)
+  refresh_frequency       String? @db.VarChar(50)
+  refresh_hour_of_day_gmt Int?    @db.SmallInt
+}
+
+model analytics_subscription_transitions {
+  record_id                    BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  subscription_event_record_id BigInt?   @db.UnsignedBigInt
+  bundle_id                    String?   @db.VarChar(36)
+  bundle_external_key          String?   @db.VarChar(255)
+  subscription_id              String?   @db.VarChar(36)
+  requested_timestamp          DateTime? @db.Date
+  event                        String?   @db.VarChar(50)
+  prev_product_name            String?   @db.VarChar(255)
+  prev_product_type            String?   @db.VarChar(50)
+  prev_product_category        String?   @db.VarChar(50)
+  prev_slug                    String?   @db.VarChar(255)
+  prev_phase                   String?   @db.VarChar(255)
+  prev_billing_period          String?   @db.VarChar(50)
+  prev_price                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_prev_price         Decimal?  @db.Decimal(10, 4)
+  prev_price_list              String?   @db.VarChar(50)
+  prev_mrr                     Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_prev_mrr           Decimal?  @db.Decimal(10, 4)
+  prev_currency                String?   @db.VarChar(50)
+  prev_service                 String?   @db.VarChar(50)
+  prev_state                   String?   @db.VarChar(50)
+  prev_business_active         Boolean?  @default(true)
+  prev_start_date              DateTime? @db.Date
+  next_product_name            String?   @db.VarChar(255)
+  next_product_type            String?   @db.VarChar(50)
+  next_product_category        String?   @db.VarChar(50)
+  next_slug                    String?   @db.VarChar(255)
+  next_phase                   String?   @db.VarChar(255)
+  next_billing_period          String?   @db.VarChar(50)
+  next_price                   Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_next_price         Decimal?  @db.Decimal(10, 4)
+  next_price_list              String?   @db.VarChar(50)
+  next_mrr                     Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  converted_next_mrr           Decimal?  @db.Decimal(10, 4)
+  next_currency                String?   @db.VarChar(50)
+  next_service                 String?   @db.VarChar(50)
+  next_state                   String?   @db.VarChar(50)
+  next_business_active         Boolean?  @default(true)
+  next_start_date              DateTime? @db.Date
+  next_end_date                DateTime? @db.Date
+  converted_currency           String?   @db.VarChar(3)
+  created_date                 DateTime? @db.DateTime(0)
+  created_by                   String?   @db.VarChar(50)
+  created_reason_code          String?   @db.VarChar(255)
+  created_comments             String?   @db.VarChar(255)
+  account_id                   String?   @db.VarChar(36)
+  account_name                 String?   @db.VarChar(100)
+  account_external_key         String?   @db.VarChar(255)
+  account_record_id            BigInt?   @db.UnsignedBigInt
+  tenant_record_id             BigInt?   @db.UnsignedBigInt
+  report_group                 String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_subscription_transitions_account_id")
+  @@index([account_record_id], map: "analytics_subscription_transitions_account_record_id")
+  @@index([bundle_external_key], map: "analytics_subscription_transitions_bundle_external_key")
+  @@index([bundle_id], map: "analytics_subscription_transitions_bundle_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_subscription_transitions_tenant_account_record_id")
+}
+
+model analytics_transaction_fields {
+  record_id              BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  custom_field_record_id BigInt?   @db.UnsignedBigInt
+  transaction_id         String?   @db.VarChar(36)
+  name                   String?   @db.VarChar(64)
+  field_value            String?   @db.VarChar(255)
+  created_date           DateTime? @db.DateTime(0)
+  created_by             String?   @db.VarChar(50)
+  created_reason_code    String?   @db.VarChar(255)
+  created_comments       String?   @db.VarChar(255)
+  account_id             String?   @db.VarChar(36)
+  account_name           String?   @db.VarChar(100)
+  account_external_key   String?   @db.VarChar(255)
+  account_record_id      BigInt?   @db.UnsignedBigInt
+  tenant_record_id       BigInt?   @db.UnsignedBigInt
+  report_group           String    @db.VarChar(50)
+
+  @@index([account_id], map: "analytics_transaction_fields_account_id")
+  @@index([account_record_id], map: "analytics_transaction_fields_account_record_id")
+  @@index([tenant_record_id, account_record_id], map: "analytics_transaction_fields_tenant_account_record_id")
+}
+
+model audit_log {
+  record_id         BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String   @db.VarChar(36)
+  target_record_id  BigInt   @db.UnsignedBigInt
+  table_name        String   @db.VarChar(50)
+  change_type       String   @db.VarChar(6)
+  created_date      DateTime @db.DateTime(0)
+  created_by        String   @db.VarChar(50)
+  reason_code       String?  @db.VarChar(255)
+  comments          String?  @db.VarChar(255)
+  user_token        String?  @db.VarChar(36)
+  account_record_id BigInt?  @db.UnsignedBigInt
+  tenant_record_id  BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([table_name, target_record_id], map: "audit_log_fetch_target_record_id")
+  @@index([tenant_record_id, account_record_id], map: "audit_log_tenant_account_record_id")
+  @@index([created_by], map: "audit_log_user_name")
+  @@index([target_record_id, table_name, tenant_record_id], map: "audit_log_via_history")
+}
+
+model blocking_state_history {
+  record_id         BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String    @db.VarChar(36)
+  target_record_id  BigInt    @db.UnsignedBigInt
+  blockable_id      String    @db.VarChar(36)
+  type              String    @db.VarChar(20)
+  state             String    @db.VarChar(50)
+  service           String    @db.VarChar(20)
+  block_change      Boolean
+  block_entitlement Boolean
+  block_billing     Boolean
+  effective_date    DateTime  @db.DateTime(0)
+  is_active         Boolean?  @default(true)
+  change_type       String    @db.VarChar(6)
+  created_date      DateTime  @db.DateTime(0)
+  created_by        String    @db.VarChar(50)
+  updated_date      DateTime? @db.DateTime(0)
+  updated_by        String?   @db.VarChar(50)
+  account_record_id BigInt    @db.UnsignedBigInt
+  tenant_record_id  BigInt    @default(0) @db.UnsignedBigInt
+
+  @@index([target_record_id], map: "blocking_state_history_target_record_id")
+  @@index([tenant_record_id], map: "blocking_state_history_tenant_record_id")
+}
+
+model blocking_states {
+  record_id         BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String    @db.VarChar(36)
+  blockable_id      String    @db.VarChar(36)
+  type              String    @db.VarChar(20)
+  state             String    @db.VarChar(50)
+  service           String    @db.VarChar(20)
+  block_change      Boolean
+  block_entitlement Boolean
+  block_billing     Boolean
+  effective_date    DateTime  @db.DateTime(0)
+  is_active         Boolean?  @default(true)
+  created_date      DateTime  @db.DateTime(0)
+  created_by        String    @db.VarChar(50)
+  updated_date      DateTime? @db.DateTime(0)
+  updated_by        String?   @db.VarChar(50)
+  account_record_id BigInt    @db.UnsignedBigInt
+  tenant_record_id  BigInt    @default(0) @db.UnsignedBigInt
+
+  @@index([blockable_id], map: "blocking_states_id")
+  @@index([id], map: "blocking_states_id_real")
+  @@index([tenant_record_id, account_record_id], map: "blocking_states_tenant_account_record_id")
+}
+
+model bundle_history {
+  record_id             BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                    String    @db.VarChar(36)
+  target_record_id      BigInt    @db.UnsignedBigInt
+  external_key          String    @db.VarChar(255)
+  account_id            String    @db.VarChar(36)
+  last_sys_update_date  DateTime? @db.DateTime(0)
+  original_created_date DateTime  @db.DateTime(0)
+  change_type           String    @db.VarChar(6)
+  created_by            String    @db.VarChar(50)
+  created_date          DateTime  @db.DateTime(0)
+  updated_by            String    @db.VarChar(50)
+  updated_date          DateTime  @db.DateTime(0)
+  account_record_id     BigInt    @db.UnsignedBigInt
+  tenant_record_id      BigInt    @default(0) @db.UnsignedBigInt
+
+  @@index([target_record_id], map: "bundle_history_target_record_id")
+  @@index([tenant_record_id], map: "bundle_history_tenant_record_id")
+}
+
+model bundles {
+  record_id             BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                    String    @unique(map: "bundles_id") @db.VarChar(36)
+  external_key          String    @db.VarChar(255)
+  account_id            String    @db.VarChar(36)
+  last_sys_update_date  DateTime? @db.DateTime(0)
+  original_created_date DateTime  @db.DateTime(0)
+  created_by            String    @db.VarChar(50)
+  created_date          DateTime  @db.DateTime(0)
+  updated_by            String    @db.VarChar(50)
+  updated_date          DateTime  @db.DateTime(0)
+  account_record_id     BigInt    @db.UnsignedBigInt
+  tenant_record_id      BigInt    @default(0) @db.UnsignedBigInt
+
+  @@unique([external_key, tenant_record_id], map: "bundles_external_key")
+  @@index([account_id], map: "bundles_account")
+  @@index([tenant_record_id, account_record_id], map: "bundles_tenant_account_record_id")
+}
+
+model bus_events {
+  record_id                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  class_name                String    @db.VarChar(128)
+  event_json                String    @db.Text
+  user_token                String?   @db.VarChar(36)
+  created_date              DateTime  @db.DateTime(0)
+  creating_owner            String    @db.VarChar(50)
+  processing_owner          String?   @db.VarChar(50)
+  processing_available_date DateTime? @db.DateTime(0)
+  processing_state          String?   @default("AVAILABLE") @db.VarChar(14)
+  error_count               Int?      @default(0) @db.UnsignedInt
+  search_key1               BigInt?   @db.UnsignedBigInt
+  search_key2               BigInt    @default(0) @db.UnsignedBigInt
+
+  @@index([search_key2, search_key1], map: "bus_events_tenant_account_record_id")
+  @@index([processing_state, processing_owner, processing_available_date], map: "idx_bus_where")
+}
+
+model bus_events_history {
+  record_id                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  class_name                String    @db.VarChar(128)
+  event_json                String    @db.Text
+  user_token                String?   @db.VarChar(36)
+  created_date              DateTime  @db.DateTime(0)
+  creating_owner            String    @db.VarChar(50)
+  processing_owner          String?   @db.VarChar(50)
+  processing_available_date DateTime? @db.DateTime(0)
+  processing_state          String?   @default("AVAILABLE") @db.VarChar(14)
+  error_count               Int?      @default(0) @db.UnsignedInt
+  search_key1               BigInt?   @db.UnsignedBigInt
+  search_key2               BigInt    @default(0) @db.UnsignedBigInt
+
+  @@index([search_key2, search_key1], map: "bus_events_history_tenant_account_record_id")
+}
+
+model bus_ext_events {
+  record_id                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  class_name                String    @db.VarChar(128)
+  event_json                String    @db.Text
+  user_token                String?   @db.VarChar(36)
+  created_date              DateTime  @db.DateTime(0)
+  creating_owner            String    @db.VarChar(50)
+  processing_owner          String?   @db.VarChar(50)
+  processing_available_date DateTime? @db.DateTime(0)
+  processing_state          String?   @default("AVAILABLE") @db.VarChar(14)
+  error_count               Int?      @default(0) @db.UnsignedInt
+  search_key1               BigInt?   @db.UnsignedBigInt
+  search_key2               BigInt    @default(0) @db.UnsignedBigInt
+
+  @@index([search_key2, search_key1], map: "bus_ext_events_tenant_account_record_id")
+  @@index([processing_state, processing_owner, processing_available_date], map: "idx_bus_ext_where")
+}
+
+model bus_ext_events_history {
+  record_id                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  class_name                String    @db.VarChar(128)
+  event_json                String    @db.Text
+  user_token                String?   @db.VarChar(36)
+  created_date              DateTime  @db.DateTime(0)
+  creating_owner            String    @db.VarChar(50)
+  processing_owner          String?   @db.VarChar(50)
+  processing_available_date DateTime? @db.DateTime(0)
+  processing_state          String?   @default("AVAILABLE") @db.VarChar(14)
+  error_count               Int?      @default(0) @db.UnsignedInt
+  search_key1               BigInt?   @db.UnsignedBigInt
+  search_key2               BigInt    @default(0) @db.UnsignedBigInt
+
+  @@index([search_key2, search_key1], map: "bus_ext_events_history_tenant_account_record_id")
+}
+
+model catalog_override_block_definition {
+  record_id        BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  parent_unit_name String   @db.VarChar(255)
+  bsize            Decimal  @db.Decimal(18, 9)
+  max              Decimal? @db.Decimal(18, 9)
+  currency         String   @db.VarChar(3)
+  price            Decimal  @db.Decimal(15, 9)
+  effective_date   DateTime @db.DateTime(0)
+  created_date     DateTime @db.DateTime(0)
+  created_by       String   @db.VarChar(50)
+  tenant_record_id BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([tenant_record_id, parent_unit_name, currency], map: "catalog_override_block_definition_idx")
+}
+
+model catalog_override_phase_definition {
+  record_id         BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  parent_phase_name String   @db.VarChar(255)
+  currency          String   @db.VarChar(3)
+  fixed_price       Decimal? @db.Decimal(15, 9)
+  recurring_price   Decimal? @db.Decimal(15, 9)
+  effective_date    DateTime @db.DateTime(0)
+  created_date      DateTime @db.DateTime(0)
+  created_by        String   @db.VarChar(50)
+  tenant_record_id  BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([tenant_record_id, parent_phase_name, currency], map: "catalog_override_phase_definition_idx")
+}
+
+model catalog_override_phase_usage {
+  record_id                  BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  usage_number               Int?     @db.UnsignedInt
+  usage_def_record_id        BigInt   @db.UnsignedBigInt
+  target_phase_def_record_id BigInt   @db.UnsignedBigInt
+  created_date               DateTime @db.DateTime(0)
+  created_by                 String   @db.VarChar(50)
+  tenant_record_id           BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([tenant_record_id, usage_number, usage_def_record_id], map: "catalog_override_phase_usage_idx")
+}
+
+model catalog_override_plan_definition {
+  record_id        BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  parent_plan_name String   @db.VarChar(255)
+  effective_date   DateTime @db.DateTime(0)
+  is_active        Boolean? @default(true)
+  created_date     DateTime @db.DateTime(0)
+  created_by       String   @db.VarChar(50)
+  tenant_record_id BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([tenant_record_id], map: "catalog_override_plan_definition_tenant_record_id")
+}
+
+model catalog_override_plan_phase {
+  record_id                 BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  phase_number              Int      @db.UnsignedInt
+  phase_def_record_id       BigInt   @db.UnsignedBigInt
+  target_plan_def_record_id BigInt   @db.UnsignedBigInt
+  created_date              DateTime @db.DateTime(0)
+  created_by                String   @db.VarChar(50)
+  tenant_record_id          BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([tenant_record_id, phase_number, phase_def_record_id], map: "catalog_override_plan_phase_idx")
+}
+
+model catalog_override_tier_block {
+  record_id                 BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  block_number              Int?     @db.UnsignedInt
+  block_def_record_id       BigInt   @db.UnsignedBigInt
+  target_tier_def_record_id BigInt   @db.UnsignedBigInt
+  created_date              DateTime @db.DateTime(0)
+  created_by                String   @db.VarChar(50)
+  tenant_record_id          BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([tenant_record_id, block_number, block_def_record_id], map: "catalog_override_tier_block_idx")
+}
+
+model catalog_override_tier_definition {
+  record_id        BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  fixed_price      Decimal? @db.Decimal(15, 9)
+  recurring_price  Decimal? @db.Decimal(15, 9)
+  currency         String   @db.VarChar(3)
+  effective_date   DateTime @db.DateTime(0)
+  created_date     DateTime @db.DateTime(0)
+  created_by       String   @db.VarChar(50)
+  tenant_record_id BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([tenant_record_id, currency], map: "catalog_override_tier_definition_idx")
+}
+
+model catalog_override_usage_definition {
+  record_id         BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  parent_usage_name String   @db.VarChar(255)
+  type              String   @db.VarChar(255)
+  fixed_price       Decimal? @db.Decimal(15, 9)
+  recurring_price   Decimal? @db.Decimal(15, 9)
+  currency          String   @db.VarChar(3)
+  effective_date    DateTime @db.DateTime(0)
+  created_date      DateTime @db.DateTime(0)
+  created_by        String   @db.VarChar(50)
+  tenant_record_id  BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([tenant_record_id, parent_usage_name, currency], map: "catalog_override_usage_definition_idx")
+}
+
+model catalog_override_usage_tier {
+  record_id                  BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  tier_number                Int?     @db.UnsignedInt
+  tier_def_record_id         BigInt   @db.UnsignedBigInt
+  target_usage_def_record_id BigInt   @db.UnsignedBigInt
+  created_date               DateTime @db.DateTime(0)
+  created_by                 String   @db.VarChar(50)
+  tenant_record_id           BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([tenant_record_id, tier_number, tier_def_record_id], map: "catalog_override_usage_tier_idx")
+}
+
+model custom_field_history {
+  record_id         BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String   @db.VarChar(36)
+  target_record_id  BigInt   @db.UnsignedBigInt
+  object_id         String   @db.VarChar(36)
+  object_type       String   @db.VarChar(30)
+  is_active         Boolean? @default(true)
+  field_name        String?  @db.VarChar(64)
+  field_value       String?  @db.VarChar(255)
+  change_type       String   @db.VarChar(6)
+  created_by        String   @db.VarChar(50)
+  created_date      DateTime @db.DateTime(0)
+  updated_by        String   @db.VarChar(50)
+  updated_date      DateTime @db.DateTime(0)
+  account_record_id BigInt   @db.UnsignedBigInt
+  tenant_record_id  BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([object_id, object_type], map: "custom_field_history_object_id_object_type")
+  @@index([target_record_id], map: "custom_field_history_target_record_id")
+  @@index([tenant_record_id, account_record_id], map: "custom_field_history_tenant_account_record_id")
+}
+
+model custom_fields {
+  record_id         BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String    @unique(map: "custom_fields_id") @db.VarChar(36)
+  object_id         String    @db.VarChar(36)
+  object_type       String    @db.VarChar(30)
+  is_active         Boolean?  @default(true)
+  field_name        String    @db.VarChar(64)
+  field_value       String?   @db.VarChar(255)
+  created_by        String    @db.VarChar(50)
+  created_date      DateTime  @db.DateTime(0)
+  updated_by        String?   @db.VarChar(50)
+  updated_date      DateTime? @db.DateTime(0)
+  account_record_id BigInt    @db.UnsignedBigInt
+  tenant_record_id  BigInt    @default(0) @db.UnsignedBigInt
+
+  @@index([field_name, field_value], map: "custom_fields_name_value")
+  @@index([object_id, object_type], map: "custom_fields_object_id_object_type")
+  @@index([tenant_record_id, account_record_id], map: "custom_fields_tenant_account_record_id")
+}
+
+model invoice_billing_events {
+  record_id         BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String   @db.VarChar(36)
+  invoice_id        String   @unique(map: "invoice_billing_events_invoice_id") @db.VarChar(36)
+  billing_events    Bytes    @db.Blob
+  created_by        String   @db.VarChar(50)
+  created_date      DateTime @db.DateTime(0)
+  account_record_id BigInt   @db.UnsignedBigInt
+  tenant_record_id  BigInt   @default(0) @db.UnsignedBigInt
+}
+
+model invoice_history {
+  record_id         BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String    @db.VarChar(36)
+  target_record_id  BigInt    @db.UnsignedBigInt
+  account_id        String    @db.VarChar(36)
+  invoice_date      DateTime  @db.Date
+  target_date       DateTime? @db.Date
+  currency          String    @db.VarChar(3)
+  status            String    @default("COMMITTED") @db.VarChar(15)
+  migrated          Boolean
+  parent_invoice    Boolean   @default(false)
+  grp_id            String    @db.VarChar(36)
+  change_type       String    @db.VarChar(6)
+  created_by        String    @db.VarChar(50)
+  created_date      DateTime  @db.DateTime(0)
+  account_record_id BigInt    @db.UnsignedBigInt
+  tenant_record_id  BigInt    @default(0) @db.UnsignedBigInt
+
+  @@index([target_record_id], map: "invoice_history_target_record_id")
+  @@index([tenant_record_id], map: "invoice_history_tenant_record_id")
+}
+
+model invoice_item_history {
+  record_id              BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                     String    @db.VarChar(36)
+  target_record_id       BigInt    @db.UnsignedBigInt
+  type                   String    @db.VarChar(24)
+  invoice_id             String    @db.VarChar(36)
+  account_id             String    @db.VarChar(36)
+  child_account_id       String?   @db.VarChar(36)
+  bundle_id              String?   @db.VarChar(36)
+  subscription_id        String?   @db.VarChar(36)
+  description            String?   @db.VarChar(255)
+  product_name           String?   @db.VarChar(255)
+  plan_name              String?   @db.VarChar(255)
+  phase_name             String?   @db.VarChar(255)
+  usage_name             String?   @db.VarChar(255)
+  catalog_effective_date DateTime? @db.DateTime(0)
+  start_date             DateTime? @db.Date
+  end_date               DateTime? @db.Date
+  amount                 Decimal   @db.Decimal(15, 9)
+  rate                   Decimal?  @db.Decimal(15, 9)
+  currency               String    @db.VarChar(3)
+  linked_item_id         String?   @db.VarChar(36)
+  quantity               Decimal?  @db.Decimal(18, 9)
+  item_details           String?   @db.Text
+  change_type            String    @db.VarChar(6)
+  created_by             String    @db.VarChar(50)
+  created_date           DateTime  @db.DateTime(0)
+  account_record_id      BigInt    @db.UnsignedBigInt
+  tenant_record_id       BigInt    @default(0) @db.UnsignedBigInt
+
+  @@index([target_record_id], map: "invoice_item_history_target_record_id")
+  @@index([tenant_record_id], map: "invoice_item_history_tenant_record_id")
+}
+
+model invoice_items {
+  record_id              BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                     String    @unique(map: "invoice_items_id") @db.VarChar(36)
+  type                   String    @db.VarChar(24)
+  invoice_id             String    @db.VarChar(36)
+  account_id             String    @db.VarChar(36)
+  child_account_id       String?   @db.VarChar(36)
+  bundle_id              String?   @db.VarChar(36)
+  subscription_id        String?   @db.VarChar(36)
+  description            String?   @db.VarChar(255)
+  product_name           String?   @db.VarChar(255)
+  plan_name              String?   @db.VarChar(255)
+  phase_name             String?   @db.VarChar(255)
+  usage_name             String?   @db.VarChar(255)
+  catalog_effective_date DateTime? @db.DateTime(0)
+  start_date             DateTime? @db.Date
+  end_date               DateTime? @db.Date
+  amount                 Decimal   @db.Decimal(15, 9)
+  rate                   Decimal?  @db.Decimal(15, 9)
+  currency               String    @db.VarChar(3)
+  linked_item_id         String?   @db.VarChar(36)
+  quantity               Decimal?  @db.Decimal(18, 9)
+  item_details           String?   @db.Text
+  created_by             String    @db.VarChar(50)
+  created_date           DateTime  @db.DateTime(0)
+  account_record_id      BigInt    @db.UnsignedBigInt
+  tenant_record_id       BigInt    @default(0) @db.UnsignedBigInt
+
+  @@index([account_id], map: "invoice_items_account_id")
+  @@index([invoice_id], map: "invoice_items_invoice_id")
+  @@index([linked_item_id], map: "invoice_items_linked_item_id")
+  @@index([subscription_id], map: "invoice_items_subscription_id")
+  @@index([tenant_record_id, account_record_id], map: "invoice_items_tenant_account_record_id")
+}
+
+model invoice_parent_children {
+  record_id         BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String   @unique(map: "invoice_parent_children_id") @db.VarChar(36)
+  parent_invoice_id String   @db.VarChar(36)
+  child_invoice_id  String   @db.VarChar(36)
+  child_account_id  String   @db.VarChar(36)
+  created_by        String   @db.VarChar(50)
+  created_date      DateTime @db.DateTime(0)
+  account_record_id BigInt   @db.UnsignedBigInt
+  tenant_record_id  BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([child_invoice_id], map: "invoice_parent_children_child_invoice_id")
+  @@index([parent_invoice_id], map: "invoice_parent_children_invoice_id")
+  @@index([tenant_record_id, account_record_id], map: "invoice_parent_children_tenant_account_record_id")
+}
+
+model invoice_payment_control_plugin_auto_pay_off {
+  record_id                BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  attempt_id               String   @db.VarChar(36)
+  payment_external_key     String   @db.VarChar(255)
+  transaction_external_key String   @db.VarChar(255)
+  account_id               String   @db.VarChar(36)
+  plugin_name              String   @db.VarChar(50)
+  payment_id               String?  @db.VarChar(36)
+  amount                   Decimal? @db.Decimal(15, 9)
+  currency                 String?  @db.VarChar(3)
+  is_active                Boolean? @default(true)
+  created_by               String   @db.VarChar(50)
+  created_date             DateTime @db.DateTime(0)
+
+  @@index([account_id], map: "invoice_payment_control_plugin_auto_pay_off_account")
+}
+
+model invoice_payment_history {
+  record_id                 BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                        String   @db.VarChar(36)
+  target_record_id          BigInt   @db.UnsignedBigInt
+  type                      String   @db.VarChar(24)
+  invoice_id                String   @db.VarChar(36)
+  payment_id                String?  @db.VarChar(36)
+  payment_date              DateTime @db.DateTime(0)
+  amount                    Decimal  @db.Decimal(15, 9)
+  currency                  String   @db.VarChar(3)
+  processed_currency        String   @db.VarChar(3)
+  payment_cookie_id         String?  @db.VarChar(255)
+  linked_invoice_payment_id String?  @db.VarChar(36)
+  status                    String   @db.VarChar(50)
+  change_type               String   @db.VarChar(6)
+  created_by                String   @db.VarChar(50)
+  created_date              DateTime @db.DateTime(0)
+  account_record_id         BigInt   @db.UnsignedBigInt
+  tenant_record_id          BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([target_record_id], map: "invoice_payment_history_target_record_id")
+  @@index([tenant_record_id], map: "invoice_payment_history_tenant_record_id")
+}
+
+model invoice_payments {
+  record_id                 BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                        String   @unique(map: "invoice_payments_id") @db.VarChar(36)
+  type                      String   @db.VarChar(24)
+  invoice_id                String   @db.VarChar(36)
+  payment_id                String?  @db.VarChar(36)
+  payment_date              DateTime @db.DateTime(0)
+  amount                    Decimal  @db.Decimal(15, 9)
+  currency                  String   @db.VarChar(3)
+  processed_currency        String   @db.VarChar(3)
+  payment_cookie_id         String?  @db.VarChar(255)
+  linked_invoice_payment_id String?  @db.VarChar(36)
+  status                    String   @db.VarChar(50)
+  created_by                String   @db.VarChar(50)
+  created_date              DateTime @db.DateTime(0)
+  account_record_id         BigInt   @db.UnsignedBigInt
+  tenant_record_id          BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([invoice_id], map: "invoice_payments_invoice_id")
+  @@index([payment_cookie_id], map: "invoice_payments_payment_cookie_id")
+  @@index([payment_id], map: "invoice_payments_payment_id")
+  @@index([linked_invoice_payment_id], map: "invoice_payments_reversals")
+  @@index([tenant_record_id, account_record_id], map: "invoice_payments_tenant_account_record_id")
+}
+
+model invoice_tracking_id_history {
+  record_id         BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String   @db.VarChar(36)
+  target_record_id  BigInt   @db.UnsignedBigInt
+  tracking_id       String   @db.VarChar(128)
+  invoice_id        String   @db.VarChar(36)
+  subscription_id   String?  @db.VarChar(36)
+  unit_type         String   @db.VarChar(255)
+  record_date       DateTime @db.Date
+  is_active         Boolean? @default(true)
+  change_type       String   @db.VarChar(6)
+  created_by        String   @db.VarChar(50)
+  created_date      DateTime @db.DateTime(0)
+  updated_by        String   @db.VarChar(50)
+  updated_date      DateTime @db.DateTime(0)
+  account_record_id BigInt   @db.UnsignedBigInt
+  tenant_record_id  BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([target_record_id], map: "invoice_tracking_id_history_target_record_id")
+  @@index([tenant_record_id], map: "invoice_tracking_id_history_tenant_record_id")
+}
+
+model invoice_tracking_ids {
+  record_id         BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String   @db.VarChar(36)
+  tracking_id       String   @db.VarChar(128)
+  invoice_id        String   @db.VarChar(36)
+  subscription_id   String?  @db.VarChar(36)
+  unit_type         String   @db.VarChar(255)
+  record_date       DateTime @db.Date
+  is_active         Boolean? @default(true)
+  created_by        String   @db.VarChar(50)
+  created_date      DateTime @db.DateTime(0)
+  updated_by        String   @db.VarChar(50)
+  updated_date      DateTime @db.DateTime(0)
+  account_record_id BigInt   @db.UnsignedBigInt
+  tenant_record_id  BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([id], map: "invoice_tracking_id_idx")
+  @@index([invoice_id], map: "invoice_tracking_invoice_id_idx")
+  @@index([tenant_record_id, account_record_id, record_date], map: "invoice_tracking_tenant_account_date_idx")
+}
+
+model invoices {
+  record_id         BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String    @unique(map: "invoices_id") @db.VarChar(36)
+  account_id        String    @db.VarChar(36)
+  invoice_date      DateTime  @db.Date
+  target_date       DateTime? @db.Date
+  currency          String    @db.VarChar(3)
+  status            String    @default("COMMITTED") @db.VarChar(15)
+  migrated          Boolean
+  parent_invoice    Boolean   @default(false)
+  grp_id            String    @db.VarChar(36)
+  created_by        String    @db.VarChar(50)
+  created_date      DateTime  @db.DateTime(0)
+  account_record_id BigInt    @db.UnsignedBigInt
+  tenant_record_id  BigInt    @default(0) @db.UnsignedBigInt
+
+  @@index([grp_id], map: "invoice_grp_id")
+  @@index([account_id], map: "invoices_account")
+  @@index([tenant_record_id, account_record_id], map: "invoices_tenant_account_record_id")
+}
+
+model node_infos {
+  record_id    BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  node_name    String    @unique(map: "node_name_idx") @db.VarChar(50)
+  boot_date    DateTime  @db.DateTime(0)
+  updated_date DateTime? @db.DateTime(0)
+  node_info    String    @db.Text
+  is_active    Boolean?  @default(true)
+}
+
+model notifications {
+  record_id                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  class_name                String    @db.VarChar(256)
+  event_json                String    @db.Text
+  user_token                String?   @db.VarChar(36)
+  created_date              DateTime  @db.DateTime(0)
+  creating_owner            String    @db.VarChar(50)
+  processing_owner          String?   @db.VarChar(50)
+  processing_available_date DateTime? @db.DateTime(0)
+  processing_state          String?   @default("AVAILABLE") @db.VarChar(14)
+  error_count               Int?      @default(0) @db.UnsignedInt
+  search_key1               BigInt    @db.UnsignedBigInt
+  search_key2               BigInt    @default(0) @db.UnsignedBigInt
+  queue_name                String    @db.VarChar(64)
+  effective_date            DateTime  @db.DateTime(0)
+  future_user_token         String?   @db.VarChar(36)
+
+  @@index([effective_date, processing_state, processing_owner, processing_available_date], map: "idx_comp_where")
+  @@index([effective_date, created_date], map: "idx_get_ready")
+  @@index([processing_state, processing_owner, processing_available_date], map: "idx_update")
+  @@index([search_key2, search_key1], map: "notifications_tenant_account_record_id")
+}
+
+model notifications_history {
+  record_id                 BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  class_name                String    @db.VarChar(256)
+  event_json                String    @db.Text
+  user_token                String?   @db.VarChar(36)
+  created_date              DateTime  @db.DateTime(0)
+  creating_owner            String    @db.VarChar(50)
+  processing_owner          String?   @db.VarChar(50)
+  processing_available_date DateTime? @db.DateTime(0)
+  processing_state          String?   @default("AVAILABLE") @db.VarChar(14)
+  error_count               Int?      @default(0) @db.UnsignedInt
+  search_key1               BigInt    @db.UnsignedBigInt
+  search_key2               BigInt    @default(0) @db.UnsignedBigInt
+  queue_name                String    @db.VarChar(64)
+  effective_date            DateTime  @db.DateTime(0)
+  future_user_token         String?   @db.VarChar(36)
+
+  @@index([search_key2, search_key1], map: "notifications_history_tenant_account_record_id")
+}
+
+model payment_attempt_history {
+  record_id                BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                       String   @db.VarChar(36)
+  target_record_id         BigInt   @db.UnsignedBigInt
+  account_id               String   @db.VarChar(36)
+  payment_method_id        String?  @db.VarChar(36)
+  payment_external_key     String   @db.VarChar(255)
+  transaction_id           String?  @db.VarChar(36)
+  transaction_external_key String   @db.VarChar(255)
+  transaction_type         String   @db.VarChar(32)
+  state_name               String   @db.VarChar(32)
+  amount                   Decimal? @db.Decimal(15, 9)
+  currency                 String?  @db.VarChar(3)
+  plugin_name              String   @db.VarChar(1024)
+  plugin_properties        Bytes?   @db.MediumBlob
+  change_type              String   @db.VarChar(6)
+  created_by               String   @db.VarChar(50)
+  created_date             DateTime @db.DateTime(0)
+  updated_by               String   @db.VarChar(50)
+  updated_date             DateTime @db.DateTime(0)
+  account_record_id        BigInt   @db.UnsignedBigInt
+  tenant_record_id         BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([target_record_id], map: "payment_attempt_history_target_record_id")
+  @@index([tenant_record_id, account_record_id], map: "payment_attempt_history_tenant_account_record_id")
+}
+
+model payment_attempts {
+  record_id                BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                       String   @unique(map: "payment_attempts_id") @db.VarChar(36)
+  account_id               String   @db.VarChar(36)
+  payment_method_id        String?  @db.VarChar(36)
+  payment_external_key     String   @db.VarChar(255)
+  transaction_id           String?  @db.VarChar(36)
+  transaction_external_key String   @db.VarChar(255)
+  transaction_type         String   @db.VarChar(32)
+  state_name               String   @db.VarChar(32)
+  amount                   Decimal? @db.Decimal(15, 9)
+  currency                 String?  @db.VarChar(3)
+  plugin_name              String   @db.VarChar(1024)
+  plugin_properties        Bytes?   @db.MediumBlob
+  created_by               String   @db.VarChar(50)
+  created_date             DateTime @db.DateTime(0)
+  updated_by               String   @db.VarChar(50)
+  updated_date             DateTime @db.DateTime(0)
+  account_record_id        BigInt   @db.UnsignedBigInt
+  tenant_record_id         BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([transaction_id], map: "payment_attempts_payment")
+  @@index([payment_external_key], map: "payment_attempts_payment_key")
+  @@index([state_name], map: "payment_attempts_payment_state")
+  @@index([transaction_external_key], map: "payment_attempts_payment_transaction_key")
+  @@index([tenant_record_id, account_record_id], map: "payment_attempts_tenant_account_record_id")
+}
+
+model payment_history {
+  record_id               BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                      String   @db.VarChar(36)
+  target_record_id        BigInt   @db.UnsignedBigInt
+  account_id              String   @db.VarChar(36)
+  payment_method_id       String   @db.VarChar(36)
+  external_key            String   @db.VarChar(255)
+  state_name              String?  @db.VarChar(64)
+  last_success_state_name String?  @db.VarChar(64)
+  change_type             String   @db.VarChar(6)
+  created_by              String   @db.VarChar(50)
+  created_date            DateTime @db.DateTime(0)
+  updated_by              String   @db.VarChar(50)
+  updated_date            DateTime @db.DateTime(0)
+  account_record_id       BigInt   @db.UnsignedBigInt
+  tenant_record_id        BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([target_record_id], map: "payment_history_target_record_id")
+  @@index([tenant_record_id, account_record_id], map: "payment_history_tenant_account_record_id")
+}
+
+model payment_method_history {
+  record_id         BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String   @db.VarChar(36)
+  external_key      String   @db.VarChar(255)
+  target_record_id  BigInt   @db.UnsignedBigInt
+  account_id        String   @db.VarChar(36)
+  plugin_name       String   @db.VarChar(50)
+  is_active         Boolean? @default(true)
+  change_type       String   @db.VarChar(6)
+  created_by        String   @db.VarChar(50)
+  created_date      DateTime @db.DateTime(0)
+  updated_by        String   @db.VarChar(50)
+  updated_date      DateTime @db.DateTime(0)
+  account_record_id BigInt   @db.UnsignedBigInt
+  tenant_record_id  BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([target_record_id], map: "payment_method_history_target_record_id")
+  @@index([tenant_record_id, account_record_id], map: "payment_method_history_tenant_account_record_id")
+}
+
+model payment_methods {
+  record_id         BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String   @unique(map: "payment_methods_id") @db.VarChar(36)
+  external_key      String   @db.VarChar(255)
+  account_id        String   @db.VarChar(36)
+  plugin_name       String   @db.VarChar(50)
+  is_active         Boolean? @default(true)
+  created_by        String   @db.VarChar(50)
+  created_date      DateTime @db.DateTime(0)
+  updated_by        String   @db.VarChar(50)
+  updated_date      DateTime @db.DateTime(0)
+  account_record_id BigInt   @db.UnsignedBigInt
+  tenant_record_id  BigInt   @default(0) @db.UnsignedBigInt
+
+  @@unique([external_key, tenant_record_id], map: "payment_methods_external_key")
+  @@index([plugin_name], map: "payment_methods_plugin_name")
+  @@index([tenant_record_id, account_record_id], map: "payment_methods_tenant_account_record_id")
+}
+
+model payment_transaction_history {
+  record_id                BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                       String   @db.VarChar(36)
+  attempt_id               String?  @db.VarChar(36)
+  transaction_external_key String   @db.VarChar(255)
+  target_record_id         BigInt   @db.UnsignedBigInt
+  transaction_type         String   @db.VarChar(32)
+  effective_date           DateTime @db.DateTime(0)
+  transaction_status       String   @db.VarChar(50)
+  amount                   Decimal? @db.Decimal(15, 9)
+  currency                 String?  @db.VarChar(3)
+  processed_amount         Decimal? @db.Decimal(15, 9)
+  processed_currency       String?  @db.VarChar(3)
+  payment_id               String   @db.VarChar(36)
+  gateway_error_code       String?  @db.VarChar(32)
+  gateway_error_msg        String?  @db.Text
+  change_type              String   @db.VarChar(6)
+  created_by               String   @db.VarChar(50)
+  created_date             DateTime @db.DateTime(0)
+  updated_by               String   @db.VarChar(50)
+  updated_date             DateTime @db.DateTime(0)
+  account_record_id        BigInt   @db.UnsignedBigInt
+  tenant_record_id         BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([target_record_id], map: "transaction_history_target_record_id")
+  @@index([tenant_record_id, account_record_id], map: "transaction_history_tenant_account_record_id")
+}
+
+model payment_transactions {
+  record_id                BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                       String   @unique(map: "transactions_id") @db.VarChar(36)
+  attempt_id               String?  @db.VarChar(36)
+  transaction_external_key String   @db.VarChar(255)
+  transaction_type         String   @db.VarChar(32)
+  effective_date           DateTime @db.DateTime(0)
+  transaction_status       String   @db.VarChar(50)
+  amount                   Decimal? @db.Decimal(15, 9)
+  currency                 String?  @db.VarChar(3)
+  processed_amount         Decimal? @db.Decimal(15, 9)
+  processed_currency       String?  @db.VarChar(3)
+  payment_id               String   @db.VarChar(36)
+  gateway_error_code       String?  @db.VarChar(32)
+  gateway_error_msg        String?  @db.Text
+  created_by               String   @db.VarChar(50)
+  created_date             DateTime @db.DateTime(0)
+  updated_by               String   @db.VarChar(50)
+  updated_date             DateTime @db.DateTime(0)
+  account_record_id        BigInt   @db.UnsignedBigInt
+  tenant_record_id         BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([transaction_external_key], map: "transactions_key")
+  @@index([payment_id], map: "transactions_payment_id")
+  @@index([transaction_status], map: "transactions_status")
+  @@index([tenant_record_id, account_record_id], map: "transactions_tenant_account_record_id")
+}
+
+model payments {
+  record_id               BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                      String   @unique(map: "payments_id") @db.VarChar(36)
+  account_id              String   @db.VarChar(36)
+  payment_method_id       String   @db.VarChar(36)
+  external_key            String   @db.VarChar(255)
+  state_name              String?  @db.VarChar(64)
+  last_success_state_name String?  @db.VarChar(64)
+  created_by              String   @db.VarChar(50)
+  created_date            DateTime @db.DateTime(0)
+  updated_by              String   @db.VarChar(50)
+  updated_date            DateTime @db.DateTime(0)
+  account_record_id       BigInt   @db.UnsignedBigInt
+  tenant_record_id        BigInt   @default(0) @db.UnsignedBigInt
+
+  @@unique([external_key, tenant_record_id], map: "payments_key")
+  @@index([account_id], map: "payments_accnt")
+  @@index([tenant_record_id, account_record_id], map: "payments_tenant_account_record_id")
+  @@index([tenant_record_id, state_name], map: "payments_tenant_record_id_state_name")
+}
+
+model roles_permissions {
+  record_id    BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  role_name    String?   @db.VarChar(128)
+  permission   String?   @db.VarChar(128)
+  is_active    Boolean?  @default(true)
+  created_date DateTime  @db.DateTime(0)
+  created_by   String    @db.VarChar(50)
+  updated_date DateTime? @db.DateTime(0)
+  updated_by   String?   @db.VarChar(50)
+
+  @@index([role_name, permission], map: "roles_permissions_idx")
+}
+
+model rolled_up_usage {
+  record_id         BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String   @unique(map: "rolled_up_usage_id") @db.VarChar(36)
+  subscription_id   String   @db.VarChar(36)
+  unit_type         String   @db.VarChar(255)
+  record_date       DateTime @db.DateTime(0)
+  amount            Decimal  @db.Decimal(18, 9)
+  tracking_id       String   @db.VarChar(128)
+  created_by        String   @db.VarChar(50)
+  created_date      DateTime @db.DateTime(0)
+  account_record_id BigInt   @db.UnsignedBigInt
+  tenant_record_id  BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([account_record_id], map: "rolled_up_usage_account_record_id")
+  @@index([subscription_id], map: "rolled_up_usage_subscription_id")
+  @@index([tenant_record_id, account_record_id], map: "rolled_up_usage_tenant_account_record_id")
+  @@index([tracking_id, subscription_id, tenant_record_id], map: "rolled_up_usage_tracking_id_subscription_id_tenant_record_id")
+}
+
+model service_broadcasts {
+  record_id    BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  service_name String   @db.VarChar(50)
+  type         String   @db.VarChar(64)
+  event        String   @db.Text
+  created_date DateTime @db.DateTime(0)
+  created_by   String   @db.VarChar(50)
+}
+
+model sessions {
+  record_id        BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id               String    @unique(map: "sessions_id") @db.VarChar(36)
+  start_timestamp  DateTime  @db.DateTime(0)
+  last_access_time DateTime? @db.DateTime(0)
+  timeout          Int?
+  host             String?   @db.VarChar(100)
+  session_data     Bytes?    @db.MediumBlob
+}
+
+model stripe_hpp_requests {
+  record_id                 BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  kb_account_id             String   @db.Char(36)
+  kb_payment_id             String?  @db.Char(36)
+  kb_payment_transaction_id String?  @db.Char(36)
+  session_id                String   @unique(map: "stripe_hpp_requests_kb_session_id") @db.VarChar(255)
+  additional_data           String?  @db.LongText
+  created_date              DateTime @db.DateTime(0)
+  kb_tenant_id              String   @db.Char(36)
+
+  @@index([kb_account_id], map: "stripe_hpp_requests_kb_account_id")
+  @@index([kb_payment_transaction_id], map: "stripe_hpp_requests_kb_payment_transaction_id")
+}
+
+model stripe_payment_methods {
+  record_id            BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  kb_account_id        String   @db.Char(36)
+  kb_payment_method_id String   @unique(map: "stripe_payment_methods_kb_payment_id") @db.Char(36)
+  stripe_id            String   @db.VarChar(255)
+  is_default           Int      @default(0) @db.SmallInt
+  is_deleted           Int      @default(0) @db.SmallInt
+  additional_data      String?  @db.LongText
+  created_date         DateTime @db.DateTime(0)
+  updated_date         DateTime @db.DateTime(0)
+  kb_tenant_id         String   @db.Char(36)
+
+  @@index([stripe_id], map: "stripe_payment_methods_stripe_id")
+}
+
+model stripe_responses {
+  record_id                 BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  kb_account_id             String   @db.Char(36)
+  kb_payment_id             String   @db.Char(36)
+  kb_payment_transaction_id String   @db.Char(36)
+  transaction_type          String   @db.VarChar(32)
+  amount                    Decimal? @db.Decimal(15, 9)
+  currency                  String?  @db.Char(3)
+  stripe_id                 String?  @db.VarChar(255)
+  additional_data           String?  @db.LongText
+  created_date              DateTime @db.DateTime(0)
+  kb_tenant_id              String   @db.Char(36)
+
+  @@index([kb_payment_id], map: "stripe_responses_kb_payment_id")
+  @@index([kb_payment_transaction_id], map: "stripe_responses_kb_payment_transaction_id")
+  @@index([stripe_id], map: "stripe_responses_stripe_id")
+}
+
+model subscription_event_history {
+  record_id               BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                      String   @db.VarChar(36)
+  target_record_id        BigInt   @db.UnsignedBigInt
+  event_type              String   @db.VarChar(15)
+  user_type               String?  @db.VarChar(25)
+  effective_date          DateTime @db.DateTime(0)
+  subscription_id         String   @db.VarChar(36)
+  plan_name               String?  @db.VarChar(255)
+  phase_name              String?  @db.VarChar(255)
+  price_list_name         String?  @db.VarChar(64)
+  billing_cycle_day_local Int?
+  quantity                Int?     @default(1)
+  is_active               Boolean? @default(true)
+  change_type             String   @db.VarChar(6)
+  created_by              String   @db.VarChar(50)
+  created_date            DateTime @db.DateTime(0)
+  updated_by              String   @db.VarChar(50)
+  updated_date            DateTime @db.DateTime(0)
+  account_record_id       BigInt   @db.UnsignedBigInt
+  tenant_record_id        BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([target_record_id], map: "subscription_event_history_target_record_id")
+  @@index([tenant_record_id], map: "subscription_event_history_tenant_record_id")
+}
+
+model subscription_events {
+  record_id               BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                      String   @unique(map: "subscription_events_id") @db.VarChar(36)
+  event_type              String   @db.VarChar(15)
+  user_type               String?  @db.VarChar(25)
+  effective_date          DateTime @db.DateTime(0)
+  subscription_id         String   @db.VarChar(36)
+  plan_name               String?  @db.VarChar(255)
+  phase_name              String?  @db.VarChar(255)
+  price_list_name         String?  @db.VarChar(64)
+  billing_cycle_day_local Int?
+  quantity                Int?     @default(1)
+  is_active               Boolean? @default(true)
+  created_by              String   @db.VarChar(50)
+  created_date            DateTime @db.DateTime(0)
+  updated_by              String   @db.VarChar(50)
+  updated_date            DateTime @db.DateTime(0)
+  account_record_id       BigInt   @db.UnsignedBigInt
+  tenant_record_id        BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([subscription_id, is_active, effective_date], map: "idx_ent_1")
+  @@index([subscription_id, effective_date, created_date, id], map: "idx_ent_2")
+  @@index([tenant_record_id, account_record_id], map: "subscription_events_tenant_account_record_id")
+}
+
+model subscription_history {
+  record_id            BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                   String    @db.VarChar(36)
+  target_record_id     BigInt    @db.UnsignedBigInt
+  bundle_id            String    @db.VarChar(36)
+  external_key         String    @db.VarChar(255)
+  category             String    @db.VarChar(32)
+  start_date           DateTime  @db.DateTime(0)
+  bundle_start_date    DateTime  @db.DateTime(0)
+  charged_through_date DateTime? @db.DateTime(0)
+  migrated             Boolean   @default(false)
+  change_type          String    @db.VarChar(6)
+  created_by           String    @db.VarChar(50)
+  created_date         DateTime  @db.DateTime(0)
+  updated_by           String    @db.VarChar(50)
+  updated_date         DateTime  @db.DateTime(0)
+  account_record_id    BigInt    @db.UnsignedBigInt
+  tenant_record_id     BigInt    @default(0) @db.UnsignedBigInt
+
+  @@index([target_record_id], map: "subscription_history_target_record_id")
+  @@index([tenant_record_id], map: "subscription_history_tenant_record_id")
+}
+
+model subscriptions {
+  record_id            BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                   String    @unique(map: "subscriptions_id") @db.VarChar(36)
+  bundle_id            String    @db.VarChar(36)
+  external_key         String    @db.VarChar(255)
+  category             String    @db.VarChar(32)
+  start_date           DateTime  @db.DateTime(0)
+  bundle_start_date    DateTime  @db.DateTime(0)
+  charged_through_date DateTime? @db.DateTime(0)
+  migrated             Boolean   @default(false)
+  created_by           String    @db.VarChar(50)
+  created_date         DateTime  @db.DateTime(0)
+  updated_by           String    @db.VarChar(50)
+  updated_date         DateTime  @db.DateTime(0)
+  account_record_id    BigInt    @db.UnsignedBigInt
+  tenant_record_id     BigInt    @default(0) @db.UnsignedBigInt
+
+  @@unique([external_key, tenant_record_id], map: "subscriptions_external_key")
+  @@index([bundle_id], map: "subscriptions_bundle_id")
+  @@index([tenant_record_id, account_record_id], map: "subscriptions_tenant_account_record_id")
+}
+
+model tag_definition_history {
+  record_id               BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                      String   @db.VarChar(36)
+  target_record_id        BigInt   @db.UnsignedBigInt
+  name                    String   @db.VarChar(30)
+  applicable_object_types String?  @db.VarChar(500)
+  description             String?  @db.VarChar(200)
+  is_active               Boolean? @default(true)
+  change_type             String   @db.VarChar(6)
+  created_by              String   @db.VarChar(50)
+  created_date            DateTime @db.DateTime(0)
+  updated_by              String   @db.VarChar(50)
+  updated_date            DateTime @db.DateTime(0)
+  account_record_id       BigInt?  @db.UnsignedBigInt
+  tenant_record_id        BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([id], map: "tag_definition_history_id")
+  @@index([name], map: "tag_definition_history_name")
+  @@index([target_record_id], map: "tag_definition_history_target_record_id")
+  @@index([tenant_record_id], map: "tag_definition_history_tenant_record_id")
+}
+
+model tag_definitions {
+  record_id               BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                      String   @unique(map: "tag_definitions_id") @db.VarChar(36)
+  name                    String   @db.VarChar(20)
+  applicable_object_types String?  @db.VarChar(500)
+  description             String   @db.VarChar(200)
+  is_active               Boolean? @default(true)
+  created_by              String   @db.VarChar(50)
+  created_date            DateTime @db.DateTime(0)
+  updated_by              String   @db.VarChar(50)
+  updated_date            DateTime @db.DateTime(0)
+  tenant_record_id        BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([tenant_record_id], map: "tag_definitions_tenant_record_id")
+}
+
+model tag_history {
+  record_id         BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String   @db.VarChar(36)
+  target_record_id  BigInt   @db.UnsignedBigInt
+  object_id         String   @db.VarChar(36)
+  object_type       String   @db.VarChar(30)
+  tag_definition_id String   @db.VarChar(36)
+  is_active         Boolean? @default(true)
+  change_type       String   @db.VarChar(6)
+  created_by        String   @db.VarChar(50)
+  created_date      DateTime @db.DateTime(0)
+  updated_by        String   @db.VarChar(50)
+  updated_date      DateTime @db.DateTime(0)
+  account_record_id BigInt   @db.UnsignedBigInt
+  tenant_record_id  BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([object_id], map: "tag_history_by_object")
+  @@index([target_record_id], map: "tag_history_target_record_id")
+  @@index([tenant_record_id, account_record_id], map: "tag_history_tenant_account_record_id")
+}
+
+model tags {
+  record_id         BigInt   @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String   @unique(map: "tags_id") @db.VarChar(36)
+  tag_definition_id String   @db.VarChar(36)
+  object_id         String   @db.VarChar(36)
+  object_type       String   @db.VarChar(30)
+  is_active         Boolean? @default(true)
+  created_by        String   @db.VarChar(50)
+  created_date      DateTime @db.DateTime(0)
+  updated_by        String   @db.VarChar(50)
+  updated_date      DateTime @db.DateTime(0)
+  account_record_id BigInt   @db.UnsignedBigInt
+  tenant_record_id  BigInt   @default(0) @db.UnsignedBigInt
+
+  @@index([object_id], map: "tags_by_object")
+  @@index([tenant_record_id, account_record_id], map: "tags_tenant_account_record_id")
+}
+
+model tenant_broadcasts {
+  record_id         BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id                String    @db.VarChar(36)
+  target_record_id  BigInt?   @db.UnsignedBigInt
+  target_table_name String    @db.VarChar(50)
+  tenant_record_id  BigInt    @default(0) @db.UnsignedBigInt
+  type              String    @db.VarChar(64)
+  user_token        String?   @db.VarChar(36)
+  created_date      DateTime  @db.DateTime(0)
+  created_by        String    @db.VarChar(50)
+  updated_date      DateTime? @db.DateTime(0)
+  updated_by        String?   @db.VarChar(50)
+
+  @@index([tenant_record_id], map: "tenant_broadcasts_key")
+}
+
+model tenant_kvs {
+  record_id        BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id               String    @db.VarChar(36)
+  tenant_record_id BigInt    @default(0) @db.UnsignedBigInt
+  tenant_key       String    @db.VarChar(255)
+  tenant_value     String    @db.MediumText
+  is_active        Boolean?  @default(true)
+  created_date     DateTime  @db.DateTime(0)
+  created_by       String    @db.VarChar(50)
+  updated_date     DateTime? @db.DateTime(0)
+  updated_by       String?   @db.VarChar(50)
+
+  @@index([tenant_record_id, tenant_key], map: "tenant_kvs_trid_key")
+}
+
+model tenants {
+  record_id    BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  id           String    @unique(map: "tenants_id") @db.VarChar(36)
+  external_key String?   @db.VarChar(255)
+  api_key      String?   @unique(map: "tenants_api_key") @db.VarChar(128)
+  api_secret   String?   @db.VarChar(128)
+  api_salt     String?   @db.VarChar(128)
+  created_date DateTime  @db.DateTime(0)
+  created_by   String    @db.VarChar(50)
+  updated_date DateTime? @db.DateTime(0)
+  updated_by   String?   @db.VarChar(50)
+}
+
+model user_roles {
+  record_id    BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  username     String?   @db.VarChar(128)
+  role_name    String?   @db.VarChar(128)
+  is_active    Boolean?  @default(true)
+  created_date DateTime  @db.DateTime(0)
+  created_by   String    @db.VarChar(50)
+  updated_date DateTime? @db.DateTime(0)
+  updated_by   String?   @db.VarChar(50)
+
+  @@index([username, role_name], map: "user_roles_idx")
+}
+
+model users {
+  record_id     BigInt    @id @unique(map: "record_id") @default(autoincrement()) @db.UnsignedBigInt
+  username      String?   @db.VarChar(128)
+  password      String?   @db.VarChar(128)
+  password_salt String?   @db.VarChar(128)
+  is_active     Boolean?  @default(true)
+  created_date  DateTime  @db.DateTime(0)
+  created_by    String    @db.VarChar(50)
+  updated_date  DateTime? @db.DateTime(0)
+  updated_by    String?   @db.VarChar(50)
+
+  @@index([username], map: "users_username")
+}
