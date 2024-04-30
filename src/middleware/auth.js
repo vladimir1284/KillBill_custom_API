@@ -2,9 +2,11 @@
 import decrypt from '../security/decrypt.js';
 import { prisma } from '../db/prisma.js';
 import catchError from '../security/catch_errors.js';
+import { validCredentials2 } from './auth2.js';
 
 export async function validCredentials(req, res, next) {
-  if (process.env.BUILDING) {
+  if (process.env.BUILDING === 'true') {
+    console.log('>>> ⚠️ Skipping middleware, BUILDING mode is true');
     next();
     return;
   }
@@ -34,8 +36,8 @@ export async function validCredentials(req, res, next) {
 
     // Check if user credentials match
     if (
-      user !== process.env.AUTH_USER ||
-      password !== process.env.AUTH_PASSWORD
+      user !== process.env.KB_AUTH_USER ||
+      password !== process.env.KB_AUTH_PASSWORD
     ) {
       return res.status(401).send('Unauthorized: Invalid user credentials');
     }
@@ -47,7 +49,7 @@ export async function validCredentials(req, res, next) {
     const tenant = await prisma.tenants.findFirst({
       where: {
         api_key: req_kb_apiKey,
-        api_secret: decryptedSecret,
+        // api_secret: decryptedSecret,   // I don't use this anymore
       },
     });
 
@@ -55,9 +57,12 @@ export async function validCredentials(req, res, next) {
       return res.status(403).send('Forbidden: Invalid tenant credentials');
     }
 
+    // Check if credentials request isn't wrong (+tenant and user)
+    await validCredentials2(req, res, next);
+
     // Authentication successful, proceed to next middleware
-    next();
+    if (!res.headersSent) next();
   } catch (error) {
-    catchError(error, 500);
+    catchError(error);
   }
 }
