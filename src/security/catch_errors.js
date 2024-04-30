@@ -2,6 +2,7 @@ import fs from 'fs';
 
 export default function catchError(
   error,
+  res,
   message = 'Internal Server Error',
   code = 500
 ) {
@@ -11,6 +12,8 @@ export default function catchError(
     `${new Date().toISOString()} - ${message} : ${error}\n`
   );
 
-  if (code == 500) res.status(500).send(message);
-  else res.status(code).send(message);
+  if (res && !res.headersSent) {
+    if (code == 500) res.status(500).send(message);
+    else res.status(code).send(message);
+  }
 }

@@ -25,6 +25,6 @@ export async function getPayments(req, res) {
 
     res.json(payments);
   } catch (error) {
-    catchError(error);
+    catchError(error, res);
   }
 }

@@ -25,7 +25,7 @@ export async function getInvoices(req, res) {
 
     res.json(invoices);
   } catch (error) {
-    catchError(error);
+    catchError(error, res);
   }
 }
 
@@ -38,6 +38,6 @@ export async function getFirstInvoiceToPay(req, res) {
 
     res.json(invoice);
   } catch (error) {
-    catchError(error);
+    catchError(error, res);
   }
 }
